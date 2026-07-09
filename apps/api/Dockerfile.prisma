@@ -1,0 +1,27 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# One-shot Prisma init image
+# Used by: `docker compose --profile init up prisma-init`
+#   1. Validates the schema
+#   2. Pushes it to the running Postgres
+#   3. Seeds demo data
+# ──────────────────────────────────────────────────────────────────────────────
+
+FROM node:22-alpine
+WORKDIR /repo
+
+COPY package.json package-lock.json ./
+COPY packages/prisma/ ./packages/prisma/
+COPY packages/ ./packages/
+
+RUN npm ci --workspace=@amalyatri/prisma --include-workspace-root \
+    && npm cache clean --force
+
+# Generate the client so the seed script can `import { PrismaClient } from '@prisma/client'`
+RUN cd packages/prisma && npx prisma generate
+
+ENV DATABASE_URL=postgresql://amalyatri:***@postgres:5432/amalyatri?schema=public
+
+WORKDIR /repo/packages/prisma
+
+# Push schema, then run seed
+CMD ["sh", "-c", "npx prisma db push --skip-generate && npx tsx prisma/seed.ts"]

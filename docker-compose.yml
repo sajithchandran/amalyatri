@@ -1,0 +1,142 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Amal Yatri — full-stack local dev stack
+#   docker compose up --build       # first run (builds images + seeds DB)
+#   docker compose up               # subsequent runs
+#   docker compose down -v          # teardown + wipe DB volume
+# Services:
+#   postgres     — PostgreSQL 16 (data on named volume)
+#   pgadmin      — pgAdmin 4 web UI  (http://localhost:5050)
+#   prisma-init  — one-shot: push schema + seed demo data
+#   api          — NestJS REST API   (http://localhost:3001/api/docs)
+#   web          — Next.js dev server (http://localhost:3000)
+# ──────────────────────────────────────────────────────────────────────────────
+
+name: amalyatri
+
+services:
+  # ── PostgreSQL ────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    container_name: amalyatri-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-amalyatri}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-amalyatri_dev_password}
+      POSTGRES_DB: ${POSTGRES_DB:-amalyatri}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-amalyatri} -d ${POSTGRES_DB:-amalyatri}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - amalyatri-net
+
+  # ── pgAdmin ───────────────────────────────────────────────────────────────
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: amalyatri-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@amalyatri.local}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_LISTEN_PORT: 80
+      PGADMIN_DISABLE_POSTFIX: "true"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - amalyatri-net
+
+  # ── Prisma init (one-shot: db push + seed) ────────────────────────────────
+  prisma-init:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.prisma
+    container_name: amalyatri-prisma-init
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-amalyatri}:${POSTGRES_PASSWORD:-amalyatri_dev_password}@postgres:5432/${POSTGRES_DB:-amalyatri}?schema=public
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - amalyatri-net
+    # Profile-based: only runs on first `docker compose --profile init up`
+    profiles: ["init"]
+
+  # ── NestJS API ────────────────────────────────────────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: amalyatri-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      API_PREFIX: ${API_PREFIX:-api}
+      # Inside Docker, host = service name "postgres"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-amalyatri}:${POSTGRES_PASSWORD:-amalyatri_dev_password}@postgres:5432/${POSTGRES_DB:-amalyatri}?schema=public
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-dev_access_secret_change_me_in_prod}
+      JWT_ACCESS_TTL: ${JWT_ACCESS_TTL:-15m}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-dev_refresh_secret_change_me_in_prod}
+      JWT_REFRESH_TTL: ${JWT_REFRESH_TTL:-30d}
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS:-10}
+      AI_PROVIDER: ${AI_PROVIDER:-stub}
+      AI_API_KEY: ${AI_API_KEY:-}
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-local}
+      STORAGE_LOCAL_DIR: /app/uploads
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000,http://web:3000}
+      THROTTLE_TTL: ${THROTTLE_TTL:-60}
+      THROTTLE_LIMIT: ${THROTTLE_LIMIT:-120}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    ports:
+      - "3001:3001"
+    volumes:
+      - api_uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - amalyatri-net
+
+  # ── Next.js Web ───────────────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    container_name: amalyatri-web
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3001/api/v1}
+      # Internal URL used by Next.js server-side to call API inside docker network
+      INTERNAL_API_URL: http://api:3001/api/v1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    networks:
+      - amalyatri-net
+
+volumes:
+  postgres_data:
+    name: amalyatri_postgres_data
+  pgadmin_data:
+    name: amalyatri_pgadmin_data
+  api_uploads:
+    name: amalyatri_api_uploads
+
+networks:
+  amalyatri-net:
+    name: amalyatri-net
+    driver: bridge
