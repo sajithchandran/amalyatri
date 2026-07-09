@@ -59,8 +59,8 @@ services:
   # ── Prisma init (one-shot: db push + seed) ────────────────────────────────
   prisma-init:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile.prisma
+      context: .                              # monorepo root — needs package.json + packages/
+      dockerfile: apps/api/Dockerfile.prisma
     container_name: amalyatri-prisma-init
     environment:
       DATABASE_URL: postgresql://${POSTGRES_USER:-amalyatri}:${POSTGRES_PASSWORD:-amalyatri_dev_password}@postgres:5432/${POSTGRES_DB:-amalyatri}?schema=public
