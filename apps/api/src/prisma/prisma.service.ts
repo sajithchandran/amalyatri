@@ -1,14 +1,31 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { PRISMA_CLIENT } from './prisma.module';
 
 /**
- * Thin wrapper around the singleton Prisma client, so modules can inject
- * it via DI rather than reaching for the global. Kept tiny on purpose.
+ * Thin DI-friendly wrapper around the singleton Prisma client.
+ *
+ * Construction order in NestJS made the @Inject(PRISMA_CLIENT) symbol-token
+ * dance finicky across @Global module boundaries. Simplest reliable form:
+ * instantiate PrismaClient directly here (it has its own internal pooling
+ * + dev hot-reload guard). Everything that imports PrismaService gets the
+ * same client.
  */
 @Injectable()
 export class PrismaService {
-  constructor(@Inject(PRISMA_CLIENT) private readonly client: PrismaClient) {}
+  readonly client: PrismaClient;
+
+  constructor() {
+    this.client = new PrismaClient({
+      log:
+        process.env.NODE_ENV === 'development'
+          ? ['query', 'error', 'warn']
+          : ['error'],
+    });
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (global as any).__prisma = this.client;
+    }
+  }
 
   get user() { return this.client.user; }
   get yatriProfile() { return this.client.yatriProfile; }

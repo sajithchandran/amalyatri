@@ -103,7 +103,7 @@ async function main() {
           lastName: 'Nair',
           qualifications: 'BAMS, MD (Ayurveda) — 18 years',
           specialties: ['Panchakarma', 'Marma', "Women's Wellness"],
-          bio: 'Chief Physician at Amal Tamara. Devi's clinical work focuses on classical Panchakarma and women’s hormonal balance.',
+          bio: "Chief Physician at Amal Tamara. Devi's clinical work focuses on classical Panchakarma and women's hormonal balance.",
           yearsOfPractice: 18,
           languages: ['English', 'Malayalam', 'Hindi'],
           availableForChat: true,
@@ -400,7 +400,13 @@ async function main() {
         status: GoalStatus.ACTIVE,
       },
       {
-        yatriUserId: raviI(yatriRavi.id, '6-min breathwork twice daily', 'breathwork', null, null, 14, GoalStatus.ACTIVE),
+        yatriUserId: yatriRavi.id,
+        title: '6-min breathwork twice daily',
+        category: 'breathwork',
+        metric: null,
+        targetValue: 14,
+        unit: 'sessions',
+        status: GoalStatus.ACTIVE,
       },
     ].filter(Boolean) as any,
   });
@@ -548,7 +554,7 @@ async function main() {
         isPublished: true,
       },
       {
-        kind: EventKind.MEDITATION_SESSION,
+        kind: EventKind.WORKSHOP,
         title: 'Sunday Sit — Guided Vipassana (45m)',
         startsAt: new Date(now.getTime() + 3 * 86400000),
         endsAt:   new Date(now.getTime() + 3 * 86400000 + 45 * 60 * 1000),
@@ -586,7 +592,7 @@ async function main() {
     data: [
       { userId: yatriAarti.id, channel: NotificationChannel.IN_APP, title: 'Dr Devi replied to your message' },
       { userId: yatriAarti.id, channel: NotificationChannel.PUSH,    title: 'Evening meditation in 15 minutes' },
-      { userId: raviI(yatriRavi.id, NotificationChannel.IN_APP, 'Your weekly wellness summary is ready'),
+      { userId: yatriRavi.id, channel: NotificationChannel.IN_APP, title: 'Your weekly wellness summary is ready' },
     ].filter(Boolean) as any,
   });
 
@@ -610,7 +616,7 @@ function raviI<T extends Record<string, unknown>>(
   status?: GoalStatus,
 ): T | null {
   if (!userId) return null;
-  return {
+  return ({
     yatriUserId: userId,
     title,
     category: category ?? 'habit',
@@ -618,7 +624,7 @@ function raviI<T extends Record<string, unknown>>(
     targetValue: targetValue ?? null,
     unit: unit ?? null,
     status: status ?? GoalStatus.ACTIVE,
-  } as T;
+  } as unknown as T);
 }
 
 main()
