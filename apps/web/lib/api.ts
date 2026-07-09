@@ -10,10 +10,35 @@
  *   const me = await api.get('/users/me');
  */
 
-const API_BASE =
-  typeof window === 'undefined'
-    ? process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1'
-    : (process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1') + '';
+/**
+ * Resolves the API base URL.
+ *
+ * Browser: defaults to `window.location.origin` so calls go to the same
+ * host/port the page was served from. The web dev server then proxies
+ * `/api/v1/*` to the API, OR — for cross-origin dev — `NEXT_PUBLIC_API_URL`
+ * is honored if explicitly set.
+ *
+ * Server: only used during SSR requests. If `NEXT_PUBLIC_API_URL` is set,
+ * uses that (server-to-server). Otherwise falls back to localhost.
+ */
+function resolveApiBase(): string {
+  const explicit = process.env.NEXT_PUBLIC_API_URL;
+  if (explicit) return explicit;
+  if (typeof window !== 'undefined') {
+    // Browser-side: talk to whichever origin the page is loaded from.
+    // For docker / remote dev, the API lives at port 3001 by default.
+    const port = window.location.port;
+    if (port === '3050' || port === '3000') {
+      // same-origin or relative: assume API is on the same host, port 3001
+      return `${window.location.protocol}//${window.location.hostname}:3001/api/v1`;
+    }
+    return 'http://localhost:3001/api/v1';
+  }
+  // SSR
+  return 'http://localhost:3001/api/v1';
+}
+
+const API_BASE = resolveApiBase();
 
 export interface ApiError {
   status: number;
