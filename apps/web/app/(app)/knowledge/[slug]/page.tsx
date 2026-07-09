@@ -43,7 +43,7 @@ export default function KnowledgeDetailPage() {
             <Card className="mb-6">
               <CardContent className="p-0">
                 <div className="aspect-video rounded-3xl bg-gradient-to-br from-forest-700 to-clay-700 grid place-items-center">
-                  <p className="text-cream/80 text-sm">▶  {itemQ.data.kind === 'PODCAST' || itemQ.data.kind === 'MEDITATION_SESSION' ? 'Listen' : 'Play'} · {Math.round((itemQ.data.durationSec ?? 0) / 60)} min</p>
+                  <p className="text-cream/80 text-sm">▶  {itemQ.data.kind === 'MEDITATION_SESSION' ? 'Listen' : 'Play'} · {Math.round((itemQ.data.durationSec ?? 0) / 60)} min</p>
                 </div>
               </CardContent>
             </Card>

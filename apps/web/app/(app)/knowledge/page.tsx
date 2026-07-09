@@ -25,7 +25,7 @@ const KIND_LABEL: Record<ContentKind, string> = {
   DOCTOR_TALK: 'Doctor talk',
 };
 
-const KIND_ICON: Record<ContentKind, React.ComponentType<{ size?: number; className?: string }>> = {
+const KIND_ICON: Record<ContentKind, React.ComponentType<{ size?: number | string; className?: string }>> = {
   ARTICLE: BookOpen, VIDEO: Video, PODCAST: Headphones, RECIPE: Salad,
   YOGA_SESSION: Leaf, MEDITATION_SESSION: Heart, FAQ: BookOpen, STORY: BookOpen,
   DOCTOR_TALK: Mic,

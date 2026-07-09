@@ -22,6 +22,8 @@ export class PrismaService {
   get timelineEvent() { return this.client.timelineEvent; }
   get doctorMessage() { return this.client.doctorMessage; }
   get consultation() { return this.client.consultation; }
+  get therapistProfile() { return this.client.therapistProfile; }
+  get wellnessGuideProfile() { return this.client.wellnessGuideProfile; }
   get community() { return this.client.community; }
   get communityMembership() { return this.client.communityMembership; }
   get communityPost() { return this.client.communityPost; }

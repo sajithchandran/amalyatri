@@ -119,7 +119,7 @@ export class WellnessTimelineService {
     });
 
     const merged = [
-      ...events.map((e) => ({ kind: 'EVENT', occurredAt: e.occurredAt, ...e })),
+      ...events.map((e) => ({ kind: 'EVENT', ...e })),
       ...retreats.map((r) => ({
         kind: 'RETREAT',
         occurredAt: r.startDate,

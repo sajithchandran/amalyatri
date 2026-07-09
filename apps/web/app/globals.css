@@ -5,16 +5,16 @@
 @layer base {
   :root {
     /* Defaults — can be overridden per route via theme. */
-    --background: 251 248 243;        /* cream */
-    --foreground: 31 44 37;           /* ink */
-    --muted: 243 232 223;             /* clay-100 */
-    --muted-foreground: 82 116 90;    /* leaf */
-    --border: 220 213 200;            /* soft */
-    --ring: 82 116 90;
-    --brand: 63 91 70;                /* forest-600 */
-    --brand-foreground: 251 248 243;
-    --accent: 184 123 88;             /* clay-500 */
-    --accent-foreground: 251 248 243;
+    --background: hsl(35 50% 97%);        /* cream */
+    --foreground: hsl(149 18% 14%);       /* ink */
+    --muted: hsl(28 47% 91%);             /* clay-100 */
+    --muted-foreground: hsl(128 16% 39%); /* leaf */
+    --border: hsl(36 23% 82%);            /* soft */
+    --ring: hsl(128 16% 39%);
+    --brand: hsl(135 18% 30%);            /* forest-600 */
+    --brand-foreground: hsl(35 50% 97%);
+    --accent: hsl(20 39% 53%);            /* clay-500 */
+    --accent-foreground: hsl(35 50% 97%);
   }
 
   * { @apply border-border; }

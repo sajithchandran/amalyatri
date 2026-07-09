@@ -78,10 +78,11 @@ export interface Doctor {
 
 export interface KnowledgeItem {
   id: string;
-  kind: 'ARTICLE' | 'VIDEO' | 'PODCAST' | 'RECIPE' | 'YOGA_SESSION' | 'MEDITATION_SESSION' | 'FAQ' | 'STORY' | 'DOCTOR_TALK';
+  kind: ContentKind;
   title: string;
   slug: string;
   summary?: string;
+  bodyMarkdown?: string;
   mediaUrl?: string;
   durationSec?: number;
   tags: string[];
@@ -89,6 +90,17 @@ export interface KnowledgeItem {
   viewCount: number;
   likeCount: number;
 }
+
+export type ContentKind =
+  | 'ARTICLE'
+  | 'VIDEO'
+  | 'PODCAST'
+  | 'RECIPE'
+  | 'YOGA_SESSION'
+  | 'MEDITATION_SESSION'
+  | 'FAQ'
+  | 'STORY'
+  | 'DOCTOR_TALK';
 
 export interface EventItem {
   id: string;

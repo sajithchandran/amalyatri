@@ -17,6 +17,40 @@ const config: Config = {
     },
     extend: {
       colors: {
+        // ── shadcn-style CSS variable bridge (so utilities like `border-border` resolve) ──
+        border: 'var(--border)',
+        input:  'var(--border)',
+        ring:   'var(--ring)',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+        primary: {
+          DEFAULT: 'var(--brand)',
+          foreground: 'var(--brand-foreground)',
+        },
+        secondary: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        muted: {
+          DEFAULT: 'var(--muted)',
+          foreground: 'var(--muted-foreground)',
+        },
+        accent: {
+          DEFAULT: 'var(--accent)',
+          foreground: 'var(--accent-foreground)',
+        },
+        destructive: {
+          DEFAULT: '#b5453a',
+          foreground: '#fbf8f3',
+        },
+        card: {
+          DEFAULT: 'var(--background)',
+          foreground: 'var(--foreground)',
+        },
+        popover: {
+          DEFAULT: 'var(--background)',
+          foreground: 'var(--foreground)',
+        },
         // ── Amal Yatri brand palette ──────────────────────────────────────────
         // Inspired by Kerala's nature: forest green, palm cream, deep clay,
         // copper sunrise, and a soft lotus accent. Calm, grounded, premium.

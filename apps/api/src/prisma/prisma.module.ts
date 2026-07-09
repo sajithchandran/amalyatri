@@ -1,8 +1,16 @@
 import { Global, Module } from '@nestjs/common';
-import { prisma } from '@amalyatri/prisma';
+import { PrismaClient } from '@prisma/client';
 import { PrismaService } from './prisma.service';
 
 export const PRISMA_CLIENT = Symbol('PRISMA_CLIENT');
+
+const prisma =
+  new PrismaClient({
+    log:
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
+  });
 
 @Global()
 @Module({

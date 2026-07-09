@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { formatDate } from '@/lib/utils';
 import type { Retreat, TimelineEvent, WellnessGoal } from '@/lib/types';
 
-const KIND_META: Record<string, { icon: React.ComponentType<{ size?: number; className?: string }>; tone: string; label: string }> = {
+const KIND_META: Record<string, { icon: React.ComponentType<{ size?: number | string; className?: string }>; tone: string; label: string }> = {
   RETREAT:            { icon: CalendarIcon, tone: 'bg-clay-100 text-clay-800',    label: 'Retreat' },
   PANCHAKARMA_STAGE:  { icon: Leaf,         tone: 'bg-forest-100 text-forest-800', label: 'Panchakarma' },
   ASSESSMENT:         { icon: Stethoscope,  tone: 'bg-sun-100 text-sun-800',      label: 'Assessment' },

@@ -5,10 +5,12 @@
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "allowSyntheticDefaultImports": true,
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
+    "rootDir": "./src",
     "baseUrl": "./",
     "incremental": true,
     "skipLibCheck": true,
@@ -20,8 +22,8 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "paths": {
-      "@amalyatri/prisma": ["../../packages/prisma/src"],
       "@amalyatri/shared": ["../../packages/shared/src"],
+      "@amalyatri/types": ["../../packages/types/src"],
       "@amalyatri/config": ["../../packages/config/src"]
     }
   },

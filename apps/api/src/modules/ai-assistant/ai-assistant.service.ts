@@ -102,7 +102,7 @@ export class AiAssistantService {
         where: { id: conversationId },
         data: { lastMsgAt: new Date() },
       }),
-    ]);
+    ] as any);
 
     return completion;
   }

@@ -17,7 +17,7 @@ export class HealthController {
   @ApiOperation({ summary: 'Readiness probe (DB check)' })
   async ready() {
     try {
-      await this.prisma.$transaction([this.prisma.user.findFirst({ select: { id: true } })]);
+      await this.prisma.$transaction([this.prisma.user.findFirst({ select: { id: true } })] as any);
       return { status: 'ok', db: 'ok' };
     } catch (err) {
       return { status: 'degraded', db: 'down', error: (err as Error).message };

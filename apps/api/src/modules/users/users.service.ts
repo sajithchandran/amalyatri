@@ -47,7 +47,7 @@ export class UsersService {
       });
     } else if (full.guideProfile) {
       const { firstName, lastName, bio, avatarUrl, ...rest } = dto;
-      await this.prisma.guideProfile.update({
+      await this.prisma.wellnessGuideProfile.update({
         where: { id: full.guideProfile.id },
         data: { firstName, lastName, bio, avatarUrl, ...rest },
       });
@@ -58,7 +58,7 @@ export class UsersService {
   async getPublicProfile(userId: string) {
     const full = await this.prisma.user.findUnique({
       where: { id: userId },
-      include: { yatriProfile: true, doctorProfile: true },
+      include: { yatriProfile: true, doctorProfile: true, guideProfile: true, therapistProfile: true },
     });
     if (!full) throw new NotFoundException('User not found');
     const p = full.yatriProfile ?? full.doctorProfile ?? null;
