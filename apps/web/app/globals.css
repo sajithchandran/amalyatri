@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Defaults — can be overridden per route via theme. */
+    --background: 251 248 243;        /* cream */
+    --foreground: 31 44 37;           /* ink */
+    --muted: 243 232 223;             /* clay-100 */
+    --muted-foreground: 82 116 90;    /* leaf */
+    --border: 220 213 200;            /* soft */
+    --ring: 82 116 90;
+    --brand: 63 91 70;                /* forest-600 */
+    --brand-foreground: 251 248 243;
+    --accent: 184 123 88;             /* clay-500 */
+    --accent-foreground: 251 248 243;
+  }
+
+  * { @apply border-border; }
+
+  html { @apply scroll-smooth; }
+
+  body {
+    @apply bg-cream text-ink font-sans antialiased;
+    font-feature-settings: 'ss01', 'cv11', 'liga';
+  }
+
+  /* Editorial typography — Cormorant for display, Inter for body */
+  h1, h2, h3, h4 { @apply font-display tracking-tight; }
+
+  ::selection {
+    background: rgba(63, 91, 70, 0.18);
+  }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: rgba(31, 44, 37, 0.18); border-radius: 8px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(31, 44, 37, 0.32); }
+}
+
+@layer components {
+  .brand-gradient {
+    background: linear-gradient(135deg, #3f5b46 0%, #52745a 40%, #82533b 100%);
+  }
+  .soft-divider {
+    background: linear-gradient(90deg, transparent, rgba(31,44,37,.12), transparent);
+    height: 1px;
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+  }
+
+  .focus-ring {
+    @apply outline-none ring-0 ring-offset-2 ring-offset-cream
+           focus-visible:ring-2 focus-visible:ring-forest-500/50
+           transition-shadow;
+  }
+
+  /* Calm primary CTA */
+  .btn-cta {
+    @apply inline-flex items-center justify-center gap-2 rounded-full
+           bg-forest-700 text-cream px-6 py-3 font-medium tracking-wide
+           shadow-soft transition
+           hover:bg-forest-800 hover:shadow-glow
+           active:translate-y-px;
+  }
+
+  /* Calm secondary CTA */
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full
+           px-6 py-3 font-medium text-ink
+           border border-forest-700/15
+           hover:border-forest-700/40 hover:bg-forest-700/5
+           transition;
+  }
+}
+
+@layer utilities {
+  /* Photographic Kerala-style backdrop veil for hero imagery */
+  .veil-bottom::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.45) 100%);
+  }
+
+  /* Subtle dotted divider for elegant lists */
+  .dotted-divider {
+    background-image: radial-gradient(circle, rgba(31,44,37,.25) 1px, transparent 1px);
+    background-size: 16px 1px;
+    background-repeat: repeat-x;
+    height: 1px;
+  }
+
+  .text-balance { text-wrap: balance; }
+  .text-pretty { text-wrap: pretty; }
+}

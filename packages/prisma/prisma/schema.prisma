@@ -1,0 +1,809 @@
+// Amal Yatri — Prisma Schema
+// 30+ entities covering: identity, roles, profiles, retreats, panchakarma,
+// wellness (assessments/goals/plans/timeline), doctor-connect, communities,
+// knowledge library, AI assistant, events, notifications, audit.
+//
+// Conventions:
+//   - UUIDs everywhere (cuid() for URL-safety)
+//   - Audit fields: createdAt, updatedAt, deletedAt (soft delete)
+//   - Enums for fixed vocabularies
+//   - Indexes on commonly-queried fields
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Identity & Access
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  YATRI              // the guest / patient
+  DOCTOR             // Amal Tamara doctor
+  THERAPIST          // therapy practitioner
+  WELLNESS_GUIDE     // yoga / meditation instructor
+  ADMIN              // platform admin
+  CONTENT_MODERATOR  // community moderator
+  SUPER_ADMIN
+}
+
+enum UserStatus {
+  PENDING_VERIFICATION
+  ACTIVE
+  SUSPENDED
+  DEACTIVATED
+}
+
+model User {
+  id            String     @id @default(cuid())
+  email         String     @unique
+  phone         String?    @unique
+  passwordHash  String
+  role          UserRole   @default(YATRI)
+  status        UserStatus @default(PENDING_VERIFICATION)
+  emailVerified Boolean    @default(false)
+  phoneVerified Boolean    @default(false)
+  lastLoginAt   DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  deletedAt     DateTime?
+
+  // Profile relations (one profile per role surface)
+  yatriProfile     YatriProfile?
+  doctorProfile    DoctorProfile?
+  therapistProfile TherapistProfile?
+  guideProfile     WellnessGuideProfile?
+
+  sessions      Session[]
+  refreshTokens RefreshToken[]
+  timeline      TimelineEvent[]
+  goals         WellnessGoal[]
+  assessments   WellnessAssessment[]
+  plans         WellnessPlan[]        @relation("AssignedPlans")
+  sentMessages  DoctorMessage[]       @relation("Sender")
+  receivedMsgs  DoctorMessage[]       @relation("Recipient")
+  consultations Consultation[]        @relation("PatientConsultations")
+  communityPosts CommunityPost[]  
+  comments      Comment[] 
+  likes         Like[]
+  aiConvs       AiConversation[]
+  notifs        Notification[]
+  uploads       MediaAsset[]
+  auditLogs     AuditLog[]
+
+  @@index([role, status])
+  @@index([email])
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent    String?
+  ip           String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  revokedAt    DateTime?
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model RefreshToken {
+  id          String    @id @default(cuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash   String    @unique
+  deviceInfo  String?
+  expiresAt   DateTime
+  createdAt   DateTime  @default(now())
+  revokedAt   DateTime?
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("password_reset_tokens")
+}
+
+model EmailVerificationToken {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("email_verification_tokens")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Profiles
+// ─────────────────────────────────────────────────────────────────────────────
+
+model YatriProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName   String
+  lastName    String
+  displayName String?
+  avatarUrl   String?
+  dateOfBirth DateTime?
+  gender      String?
+  city        String?
+  country     String?
+  bio         String?
+  preferredLanguage String  @default("en")
+  timezone    String?
+  wellnessScore Int     @default(0) // derived cache; refreshed by backend
+  joinedAsYatriAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+
+  retreats       Retreat[]
+  timelineEvents TimelineEvent[]
+
+  @@index([lastName, firstName])
+  @@map("yatri_profiles")
+}
+
+model DoctorProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName      String
+  lastName       String
+  qualifications String
+  specialties    String[] // e.g. ["Panchakarma", "Marma"]
+  bio            String?
+  avatarUrl      String?
+  yearsOfPractice Int     @default(0)
+  languages      String[]
+  availableForChat Boolean @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
+
+  consultations Consultation[]
+  posts         CommunityPost[]      @relation("PostAuthorDoctor")
+  articles      KnowledgeItem[]     @relation("DoctorArticles")
+
+  @@map("doctor_profiles")
+}
+
+model TherapistProfile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName String
+  lastName  String
+  modality  String  // abhyanga, shirodhara, etc.
+  bio       String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("therapist_profiles")
+}
+
+model WellnessGuideProfile {
+  id        String  @id @default(cuid())
+  userId    String  @unique
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  firstName String
+  lastName  String
+  speciality String // yoga, meditation, breathwork
+  bio       String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("guide_profiles")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Retreats & Panchakarma
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum RetreatType {
+  PANCHAKARMA
+  WELLNESS
+  DETOX
+  YOGA
+  MEDITATION
+  WEIGHT_MANAGEMENT
+  STRESS_MANAGEMENT
+  CORPORATE
+}
+
+enum RetreatStatus {
+  PLANNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model Retreat {
+  id            String        @id @default(cuid())
+  yatriId       String
+  yatri         YatriProfile  @relation(fields: [yatriId], references: [id], onDelete: Cascade)
+  title         String        // e.g. "21-day Panchakarma — January 2026"
+  type          RetreatType
+  status        RetreatStatus @default(COMPLETED)
+  startDate     DateTime
+  endDate       DateTime
+  locationCity  String        @default("Kerala")
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  programs      PanchakarmaProgram[]
+  assessments   WellnessAssessment[]
+  timelineEvents TimelineEvent[]
+
+  @@index([yatriId, startDate])
+  @@index([type, status])
+  @@map("retreats")
+}
+
+enum PanchakarmaStage {
+  PURVAKARMA   // preparation
+  PRADHANAKARMA // main 5 procedures
+  PASHCHATKARMA // post-procedure recovery
+}
+
+model PanchakarmaProgram {
+  id            String           @id @default(cuid())
+  retreatId     String
+  retreat       Retreat          @relation(fields: [retreatId], references: [id], onDelete: Cascade)
+  stage         PanchakarmaStage
+  name          String           // "Snehana", "Swedana", "Vamana", etc.
+  description   String?
+  startDate     DateTime
+  endDate       DateTime
+  notes         String?
+  createdAt     DateTime         @default(now())
+
+  @@index([retreatId])
+  @@map("panchakarma_programs")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Wellness: assessments, goals, plans, timeline
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum AssessmentKind {
+  INITIAL
+  POST_RETREAT
+  QUARTERLY
+  ANNUAL
+  AD_HOC
+}
+
+model WellnessAssessment {
+  id         String         @id @default(cuid())
+  yatriUserId String
+  yatriUser  User           @relation(fields: [yatriUserId], references: [id], onDelete: Cascade)
+  retreatId  String?
+  retreat    Retreat?       @relation(fields: [retreatId], references: [id], onDelete: SetNull)
+  kind       AssessmentKind
+  metrics    Json           // free-form: dosha balance, sleep, energy, BMI…
+  summary    String?
+  recordedAt DateTime       @default(now())
+  createdAt  DateTime       @default(now())
+
+  @@index([yatriUserId, recordedAt])
+  @@map("wellness_assessments")
+}
+
+enum GoalStatus {
+  ACTIVE
+  COMPLETED
+  ABANDONED
+}
+
+model WellnessGoal {
+  id        String     @id @default(cuid())
+  yatriUserId String
+  yatriUser User       @relation(fields: [yatriUserId], references: [id], onDelete: Cascade)
+  title     String
+  detail    String?
+  category  String     // sleep, weight, fitness, mindfulness, nutrition
+  metric    String?    // "weight_kg", "sleep_hours"
+  targetValue Float?
+  currentValue Float?
+  unit      String?
+  status    GoalStatus @default(ACTIVE)
+  dueDate   DateTime?
+  completedAt DateTime?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([yatriUserId, status])
+  @@map("wellness_goals")
+}
+
+enum PlanKind {
+  YOGA
+  MEDITATION
+  DIET
+  CURE_CUISINE
+  LIFESTYLE
+  DAILY_ROUTINE
+  SEASONAL
+}
+
+enum PlanStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ARCHIVED
+}
+
+model WellnessPlan {
+  id          String    @id @default(cuid())
+  kind        PlanKind
+  status      PlanStatus @default(ACTIVE)
+  title       String
+  description String?
+  assignedToUserId String
+  assignedTo  User      @relation("AssignedPlans", fields: [assignedToUserId], references: [id], onDelete: Cascade)
+  createdByUserId String?
+  startDate   DateTime  @default(now())
+  endDate     DateTime?
+  payload     Json      // plan-specific structured content
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  reminders   MedicineReminder[]
+
+  @@index([assignedToUserId, status])
+  @@index([kind])
+  @@map("wellness_plans")
+}
+
+enum ReminderKind {
+  MEDICINE
+  YOGA
+  MEDITATION
+  FOLLOW_UP
+  HABIT
+}
+
+model MedicineReminder {
+  id        String       @id @default(cuid())
+  yatriUserId String
+  planId    String?
+  plan      WellnessPlan? @relation(fields: [planId], references: [id], onDelete: SetNull)
+  kind      ReminderKind
+  title     String
+  notes     String?
+  // array of HH:MM strings; service expands these into notifications
+  timesLocal String[]
+  timezone  String       @default("Asia/Kolkata")
+  active    Boolean      @default(true)
+  startsOn  DateTime     @default(now())
+  endsOn    DateTime?
+  createdAt DateTime     @default(now())
+
+  @@index([yatriUserId, active])
+  @@map("medicine_reminders")
+}
+
+enum TimelineEventType {
+  RETREAT
+  PANCHAKARMA_STAGE
+  ASSESSMENT
+  GOAL
+  YOGA_SESSION
+  MEDITATION_SESSION
+  MEAL
+  MEDICINE
+  DOCTOR_NOTE
+  LIFESTYLE
+  ACHIEVEMENT
+  WEIGHT
+}
+
+model TimelineEvent {
+  id          String           @id @default(cuid())
+  yatriUserId String
+  yatriUser   User             @relation(fields: [yatriUserId], references: [id], onDelete: Cascade)
+  yatriProfileId String?
+  yatriProfile YatriProfile?   @relation(fields: [yatriProfileId], references: [id], onDelete: Cascade)
+  retreatId   String?
+  retreat     Retreat?         @relation(fields: [retreatId], references: [id], onDelete: SetNull)
+  type        TimelineEventType
+  title       String
+  description String?
+  occurredAt  DateTime         @default(now())
+  // structured measurement for weight / vitals etc.
+  metricName  String?
+  metricValue Float?
+  metricUnit  String?
+  tags        String[]
+  mediaUrls   String[]
+  createdAt   DateTime         @default(now())
+
+  @@index([yatriUserId, occurredAt])
+  @@index([type])
+  @@map("timeline_events")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Doctor Connect
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum MessageKind {
+  TEXT
+  VOICE
+  IMAGE
+  DOCUMENT
+}
+
+model DoctorMessage {
+  id          String      @id @default(cuid())
+  senderId    String
+  sender      User        @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  recipientId String
+  recipient   User        @relation("Recipient", fields: [recipientId], references: [id], onDelete: Cascade)
+  kind        MessageKind @default(TEXT)
+  body        String?
+  mediaUrl    String?
+  durationSec Int?
+  readAt      DateTime?
+  createdAt   DateTime    @default(now())
+
+  @@index([senderId, recipientId, createdAt])
+  @@index([recipientId, readAt])
+  @@map("doctor_messages")
+}
+
+enum ConsultationStatus {
+  REQUESTED
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ConsultationMode {
+  IN_PERSON
+  VIDEO
+  PHONE
+  CHAT
+}
+
+model Consultation {
+  id           String             @id @default(cuid())
+  patientUserId String
+  patient      User               @relation("PatientConsultations", fields: [patientUserId], references: [id], onDelete: Cascade)
+  doctorProfileId String
+  doctor       DoctorProfile      @relation(fields: [doctorProfileId], references: [id], onDelete: Cascade)
+  status       ConsultationStatus @default(REQUESTED)
+  mode         ConsultationMode
+  scheduledFor DateTime?
+  startedAt    DateTime?
+  endedAt      DateTime?
+  patientNote  String?
+  doctorNote   String?
+  aiSummary    String?
+  followupPlan Json?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([patientUserId, status])
+  @@index([doctorProfileId, scheduledFor])
+  @@map("consultations")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Community
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Community {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  name        String
+  description String?
+  coverImageUrl String?
+  category    String         // "Panchakarma Alumni", "Back Pain", "Yoga", ...
+  rulesMarkdown String?
+  memberCount Int            @default(0)
+  isPrivate   Boolean        @default(false)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  memberships CommunityMembership[]
+  posts       CommunityPost[]
+
+  @@index([category])
+  @@map("communities")
+}
+
+enum CommunityRole {
+  MEMBER
+  MODERATOR
+  EXPERT
+  GUEST
+}
+
+model CommunityMembership {
+  id          String        @id @default(cuid())
+  communityId String
+  community   Community     @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  userId      String
+  role        CommunityRole @default(MEMBER)
+  joinedAt    DateTime      @default(now())
+
+  @@unique([communityId, userId])
+  @@map("community_memberships")
+}
+
+enum PostKind {
+  DISCUSSION
+  QUESTION
+  RECIPE
+  TIP
+  STORY
+}
+
+model CommunityPost {
+  id          String     @id @default(cuid())
+  communityId String
+  community   Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  authorId    String
+  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorDoctorId String?
+  authorDoctor DoctorProfile? @relation("PostAuthorDoctor", fields: [authorDoctorId], references: [id], onDelete: SetNull)
+  kind        PostKind   @default(DISCUSSION)
+  title       String?
+  body        String
+  mediaUrls   String[]
+  expertAnswered Boolean @default(false)
+  pinned      Boolean    @default(false)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+
+  comments    Comment[]
+  likes       Like[]
+
+  @@index([communityId, createdAt])
+  @@index([authorId])
+  @@map("community_posts")
+}
+
+model Comment {
+  id        String         @id @default(cuid())
+  postId    String
+  post      CommunityPost  @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  deletedAt DateTime?
+
+  @@index([postId, createdAt])
+  @@map("comments")
+}
+
+model Like {
+  id        String        @id @default(cuid())
+  postId    String
+  post      CommunityPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime      @default(now())
+
+  @@unique([postId, userId])
+  @@map("likes")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Knowledge Library
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum ContentKind {
+  ARTICLE
+  VIDEO
+  PODCAST
+  RECIPE
+  YOGA_SESSION
+  MEDITATION_SESSION
+  FAQ
+  STORY
+  DOCTOR_TALK
+}
+
+model KnowledgeItem {
+  id            String      @id @default(cuid())
+  kind          ContentKind
+  title         String
+  slug          String      @unique
+  summary       String?
+  bodyMarkdown  String?
+  mediaUrl      String?
+  durationSec   Int?
+  authorDoctorId String?
+  authorDoctor  DoctorProfile? @relation("DoctorArticles", fields: [authorDoctorId], references: [id], onDelete: SetNull)
+  tags          String[]
+  publishedAt   DateTime?
+  viewCount     Int         @default(0)
+  likeCount     Int         @default(0)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([kind, publishedAt])
+  @@index([slug])
+  @@map("knowledge_items")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Events
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum EventKind {
+  LIVE_SESSION
+  WORKSHOP
+  WEBINAR
+  DOCTOR_QA
+  RETREAT_EVENT
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  kind        EventKind
+  title       String
+  description String?
+  coverImageUrl String?
+  startsAt    DateTime
+  endsAt      DateTime
+  timezone    String   @default("Asia/Kolkata")
+  hostName    String?
+  capacity    Int?
+  meetingUrl  String?
+  isPublished Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  registrations EventRegistration[]
+
+  @@index([startsAt])
+  @@map("events")
+}
+
+model EventRegistration {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId    String
+  status    String   @default("REGISTERED") // REGISTERED, ATTENDED, CANCELLED
+  createdAt DateTime @default(now())
+
+  @@unique([eventId, userId])
+  @@map("event_registrations")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Assistant
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AiConversation {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String   @default("New conversation")
+  topic      String?
+  startedAt  DateTime @default(now())
+  lastMsgAt  DateTime @default(now())
+
+  messages   AiMessage[]
+
+  @@index([userId, lastMsgAt])
+  @@map("ai_conversations")
+}
+
+enum AiRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+model AiMessage {
+  id             String        @id @default(cuid())
+  conversationId String
+  conversation   AiConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  role           AiRole
+  content        String
+  providerMeta   Json?         // model, tokens, citations
+  createdAt      DateTime      @default(now())
+
+  @@index([conversationId, createdAt])
+  @@map("ai_messages")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Notifications & Media
+// ─────────────────────────────────────────────────────────────────────────────
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  PUSH
+}
+
+model Notification {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel   NotificationChannel
+  title     String
+  body      String?
+  link      String?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId, readAt, createdAt])
+  @@map("notifications")
+}
+
+model MediaAsset {
+  id          String   @id @default(cuid())
+  uploaderId  String?
+  uploader    User?    @relation(fields: [uploaderId], references: [id], onDelete: SetNull)
+  filename    String
+  storageKey  String   @unique
+  mimeType    String
+  byteSize    Int
+  width       Int?
+  height      Int?
+  kind        String   // image, video, audio, doc
+  provider    String   @default("local") // local, s3, azure, minio
+  url         String?
+  createdAt   DateTime @default(now())
+
+  @@index([uploaderId])
+  @@map("media_assets")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Audit
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  diff      Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([entity, entityId])
+  @@map("audit_logs")
+}

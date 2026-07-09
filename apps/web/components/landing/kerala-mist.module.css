@@ -1,0 +1,118 @@
+/* Kerala Mist — CSS-only scene used on the landing hero. No external
+   images required, so the page renders beautifully before licensed
+   photography is sourced. Replace with a real photo when ready. */
+
+.scene {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: 1.75rem;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(120% 80% at 50% 100%, #1f4a32 0%, #2c5a3f 30%, #4a7a52 60%, #f3e8df 100%);
+}
+
+.scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(60% 30% at 30% 30%, rgba(255, 255, 255, 0.18), transparent 60%),
+    radial-gradient(40% 20% at 70% 50%, rgba(255, 255, 255, 0.12), transparent 60%),
+    radial-gradient(30% 20% at 20% 80%, rgba(255, 255, 255, 0.10), transparent 60%);
+  z-index: 1;
+}
+
+.scene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 50%, rgba(0, 0, 0, 0.35) 100%);
+  z-index: 2;
+}
+
+.sun {
+  position: absolute;
+  top: 12%;
+  right: 14%;
+  width: 90px;
+  height: 90px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #f6ead0 0%, #ebd19d 50%, transparent 70%);
+  box-shadow: 0 0 60px rgba(246, 234, 208, 0.6);
+  z-index: 0;
+  animation: km-breathe 8s ease-in-out infinite;
+}
+
+.treeRow {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60%;
+  z-index: 3;
+  background:
+    radial-gradient(7% 28% at 18% 72%, #0e2a1a 50%, transparent 60%),
+    radial-gradient(6% 25% at 38% 68%, #0e2a1a 50%, transparent 60%),
+    radial-gradient(7% 30% at 62% 72%, #0e2a1a 50%, transparent 60%),
+    radial-gradient(8% 28% at 82% 76%, #0e2a1a 50%, transparent 60%);
+}
+
+.canopy {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(14% 10% at 18% 32%, #1a3d27 50%, transparent 60%),
+    radial-gradient(12% 8% at 38% 30%, #1a3d27 50%, transparent 60%),
+    radial-gradient(13% 9% at 62% 33%, #1a3d27 50%, transparent 60%),
+    radial-gradient(15% 11% at 82% 38%, #1a3d27 50%, transparent 60%);
+}
+
+.water {
+  position: absolute;
+  bottom: 6%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 12%;
+  z-index: 4;
+  border-radius: 9999px;
+  background: radial-gradient(50% 60% at 50% 50%, rgba(255, 255, 255, 0.45), transparent 70%);
+  filter: blur(6px);
+  animation: km-ripple 8s ease-in-out infinite;
+}
+
+.caption {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 1.75rem;
+  right: 1.75rem;
+  color: rgba(251, 248, 243, 0.92);
+  z-index: 5;
+}
+
+.captionTag {
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.captionTitle {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  font-family: var(--font-display), 'Cormorant Garamond', serif;
+  margin-top: 0.4rem;
+}
+
+@keyframes km-ripple {
+  0%, 100% { transform: translate(-50%, 0) scale(1); opacity: 0.7; }
+  50%      { transform: translate(-50%, -4px) scale(1.04); opacity: 0.9; }
+}
+
+@keyframes km-breathe {
+  0%, 100% { transform: scale(1); }
+  50%      { transform: scale(1.06); }
+}

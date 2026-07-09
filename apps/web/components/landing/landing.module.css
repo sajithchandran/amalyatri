@@ -1,0 +1,20 @@
+/* Landing-page component styles — kept here so the design system tokens
+   in app/globals.css stay focused and reusable. These are local mood
+   classes used only inside components/landing. */
+
+.hero-bg {
+  background:
+    radial-gradient(60% 50% at 50% 0%, rgba(63, 91, 70, 0.18) 0%, transparent 60%),
+    radial-gradient(40% 30% at 80% 20%, rgba(184, 123, 88, 0.14) 0%, transparent 60%),
+    linear-gradient(180deg, #fbf8f3 0%, #f3e8df 100%);
+}
+
+.section-fade {
+  background: linear-gradient(180deg, transparent 0%, rgba(31, 44, 37, 0.02) 50%, transparent 100%);
+}
+
+.glow-leaf {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.5) inset,
+    0 24px 64px rgba(63, 91, 70, 0.18);
+}
