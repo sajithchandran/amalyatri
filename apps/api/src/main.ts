@@ -10,13 +10,22 @@ async function bootstrap() {
     logger: ['error', 'warn', 'log', 'debug', 'verbose'],
   });
 
-  app.use(helmet());
+  // Helmet with sane defaults for an API (skipping COEP which interferes
+  // with cross-origin reads in dev).
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: false,
+      crossOriginEmbedderPolicy: false,
+    }),
+  );
   app.enableCors({
-    origin: (process.env.CORS_ORIGINS ?? 'http://localhost:3000,http://localhost:3050,http://88.222.214.77:3050')
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean),
+    // For dev: allow any origin (same-host setups + remote address setups).
+    // In prod: set CORS_ORIGINS env to a comma-separated allow-list, e.g.
+    //   CORS_ORIGINS=https://amalyatri.com,https://app.amalyatri.com
+    origin: '*',
     credentials: false,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   });
 
   app.setGlobalPrefix(process.env.API_PREFIX ?? 'api/v1');
