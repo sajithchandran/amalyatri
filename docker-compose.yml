@@ -15,6 +15,9 @@ name: amalyatri
 
 services:
   # ── PostgreSQL ────────────────────────────────────────────────────────────
+  # NOTE: host port remapped 5432 → 5433 locally because port 5432 is held by
+  # an unrelated project (zeal-postgres). When running the API manually,
+  # use DATABASE_URL=postgresql://...@localhost:5433/amalyatri.
   postgres:
     image: postgres:16-alpine
     container_name: amalyatri-postgres
@@ -25,7 +28,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-amalyatri}
       PGDATA: /var/lib/postgresql/data/pgdata
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
