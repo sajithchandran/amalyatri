@@ -29,15 +29,24 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  React.useEffect(() => {
-    if (!loading && !user) router.push('/admin/login');
-  }, [loading, user, router]);
+  const isLoginPage = pathname === '/admin/login';
 
   React.useEffect(() => {
-    if (!loading && user && (user.role === 'YATRI' || user.role === 'THERAPIST')) {
+    if (loading || isLoginPage) return;
+    if (!user) router.push('/admin/login');
+  }, [loading, user, router, isLoginPage]);
+
+  React.useEffect(() => {
+    if (loading || isLoginPage) return;
+    if (user && (user.role === 'YATRI' || user.role === 'THERAPIST')) {
       router.push('/dashboard');
     }
-  }, [loading, user, router]);
+  }, [loading, user, router, isLoginPage]);
+
+  // Login page gets its own minimal layout
+  if (isLoginPage) {
+    return <>{children}</>;
+  }
 
   if (loading) {
     return (
