@@ -1,6 +1,6 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "",
-  "buildCommand": "cd ../.. && npm ci --no-audit --no-fund && npm --workspace=@amalyatri/api run build",
+  "buildCommand": "cd /vercel/path0 && npm install 2>&1 | tail -5 && npm --workspace=@amalyatri/api run build 2>&1",
   "outputDirectory": "dist"
 }

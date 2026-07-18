@@ -42,3 +42,4 @@ prisma/migrations/dev/
 
 # Local docker volumes
 .docker-data/
+.vercel
