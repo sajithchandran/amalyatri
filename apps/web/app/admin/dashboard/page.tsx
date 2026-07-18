@@ -136,7 +136,7 @@ export default function AdminDashboardPage() {
                       <p className="text-sm font-medium text-slate-900 truncate">{c.patientName ?? 'Unknown patient'}</p>
                       <p className="text-xs text-slate-500">{c.mode?.replaceAll('_', ' ')} · {c.scheduledFor ? formatRelative(c.scheduledFor) : 'Follow-up'}</p>
                     </div>
-                    <Badge variant={c.status === 'COMPLETED' ? 'default' : c.status === 'IN_PROGRESS' ? 'solid' : 'ghost'}>
+                    <Badge variant={c.status === 'COMPLETED' ? 'forest' : c.status === 'IN_PROGRESS' ? 'solid' : 'ghost'}>
                       {c.status?.replaceAll('_', ' ')}
                     </Badge>
                   </div>
