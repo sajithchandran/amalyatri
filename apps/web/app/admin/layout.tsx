@@ -18,7 +18,7 @@ const ADMIN_NAV = [
   { href: '/admin/dashboard',    label: 'Dashboard',     icon: LayoutDashboard },
   { href: '/admin/patients',     label: 'Patients',      icon: Users },
   { href: '/admin/consultations',label: 'Consultations',  icon: Stethoscope },
-  { href: '/doctor',             label: 'Messages',      icon: MessageCircle },
+  { href: '/admin/messages',      label: 'Messages',      icon: MessageCircle },
   { href: '/admin/schedule',     label: 'Schedule',      icon: CalendarDays },
   { href: '/admin/settings',     label: 'Settings',      icon: Settings },
 ];
