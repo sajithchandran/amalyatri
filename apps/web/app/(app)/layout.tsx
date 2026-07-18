@@ -19,7 +19,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [drawerOpen, setDrawerOpen] = React.useState(false);
 
   React.useEffect(() => {
-    if (!loading && !user) router.push('/login');
+    if (loading) return;
+    if (!user) { router.push('/login'); return; }
+    // Redirect staff users to admin portal
+    if (['DOCTOR', 'ADMIN', 'SUPER_ADMIN', 'WELLNESS_GUIDE'].includes(user.role)) {
+      router.push('/admin/dashboard');
+    }
   }, [loading, user, router]);
 
   if (loading) {

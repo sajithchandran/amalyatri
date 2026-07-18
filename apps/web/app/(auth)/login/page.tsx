@@ -32,8 +32,13 @@ function LoginForm() {
     setLoading(true);
     setError(null);
     try {
-      await login(email.trim().toLowerCase(), password);
-      router.push(next);
+      const user = await login(email.trim().toLowerCase(), password);
+      // Route based on role
+      if (user.role === 'DOCTOR' || user.role === 'ADMIN' || user.role === 'SUPER_ADMIN' || user.role === 'WELLNESS_GUIDE') {
+        router.push('/admin/dashboard');
+      } else {
+        router.push(next);
+      }
     } catch (err: any) {
       setError(err?.details?.message ?? err?.message ?? 'Could not sign you in.');
     } finally {
@@ -71,6 +76,11 @@ function LoginForm() {
             Begin the journey
           </Link>
         </p>
+        <div className="mt-6 pt-5 border-t border-forest-900/8">
+          <Link href="/admin/login" className="text-xs text-ink/50 hover:text-forest-700 transition">
+            Staff sign in →
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );

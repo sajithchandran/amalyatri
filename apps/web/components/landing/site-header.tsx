@@ -20,6 +20,9 @@ export function SiteHeader() {
           <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
             <Link href="/login">Sign in</Link>
           </Button>
+          <Button asChild variant="ghost" size="sm" className="text-xs text-ink/50 hover:text-forest-700">
+            <Link href="/admin/login">Staff</Link>
+          </Button>
           <Button asChild size="sm">
             <Link href="/register">Become a Yatri</Link>
           </Button>
