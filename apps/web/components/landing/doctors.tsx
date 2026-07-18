@@ -4,18 +4,32 @@ import { initials } from '@/lib/utils';
 
 const doctors = [
   {
-    name: 'Dr. Devi Nair',
-    role: 'Chief Physician',
-    bio: 'Eighteen years of classical Panchakarma. Her work focuses on women’s hormonal balance and gut reset.',
-    specialties: ['Panchakarma', "Women's Wellness", 'Marma'],
-    initials: 'DN',
+    name: 'Dr. Reji Raj',
+    role: 'General Manager & Sr Ayurveda Consultant',
+    bio: 'Over 19 years of experience at Taj Hotels and world-renowned properties. Specialises in Panchakarma, wellness programmes, Ayurvedic toxicology, and obesity management.',
+    specialties: ['Panchakarma', 'Wellness Programs', 'Ayurvedic Toxicology'],
+    initials: 'RR',
   },
   {
-    name: 'Dr. Arjun Menon',
-    role: 'Stress & Metabolic Health',
-    bio: 'Specialises in chronic stress reversal and metabolic reset programs for guests returning from urban burnout.',
-    specialties: ['Stress', 'Sleep', 'Metabolic Health'],
-    initials: 'AM',
+    name: 'Dr. Ajitha Sunil Babu',
+    role: 'Chief Medical Officer',
+    bio: 'Chief Medical Officer with 14+ years of experience. Trained in Reiki (3rd degree) and Pranic Healing. Specialises in Panchakarma, Ayurvedic ophthalmology, and gynaecology.',
+    specialties: ['Panchakarma', 'Ayurvedic Ophthalmology', 'Reiki'],
+    initials: 'AS',
+  },
+  {
+    name: 'Dr. Alvin',
+    role: 'Sr. Ayurveda Physician & Hotel Manager',
+    bio: 'BAMS from Government Ayurveda College, Kannur and MBA in Health & Hospitality. Over 17 years of experience blending Eastern and Western wellness practices.',
+    specialties: ['Panchakarma', 'Spa Therapies', 'Wellness Management'],
+    initials: 'AL',
+  },
+  {
+    name: 'Dr. Karthika S',
+    role: 'Sr. Ayurveda Physician',
+    bio: 'BAMS, MD with 14+ years of experience. PhD scholar and former assistant professor. Specialises in Panchakarma and meditative wellness approaches.',
+    specialties: ['Panchakarma', 'Ayurvedic Consultations', 'Meditation'],
+    initials: 'KS',
   },
 ];
 
@@ -63,6 +77,14 @@ export function Doctors() {
             </article>
           ))}
         </div>
+
+        <p className="mt-10 text-center text-sm text-ink/55">
+          Meet all 8 Amal Tamara physicians on{' '}
+          <a href="https://test.amaltamara.com/expertise/" target="_blank" rel="noopener noreferrer"
+             className="text-forest-700 hover:underline">
+            our expertise page
+          </a>.
+        </p>
       </div>
     </section>
   );
