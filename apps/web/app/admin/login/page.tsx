@@ -8,23 +8,44 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export default function AdminLoginPage() {
+function AdminLoginForm() {
   const search = useSearchParams();
   const next = search.get('next') ?? '/admin/dashboard';
-  const { login } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [error, setError] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(false);
+  const [submitting, setSubmitting] = React.useState(false);
+
+  // If already logged in as staff, redirect
+  React.useEffect(() => {
+    if (!authLoading && user) {
+      if (['DOCTOR', 'ADMIN', 'SUPER_ADMIN', 'WELLNESS_GUIDE'].includes(user.role)) {
+        router.push('/admin/dashboard');
+      } else {
+        router.push('/dashboard');
+      }
+    }
+  }, [authLoading, user, router]);
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center p-6">
+        <div className="animate-spin size-8 rounded-full border-2 border-emerald-600 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (user) return null;
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
+    setSubmitting(true);
     setError(null);
     try {
-      const user = await login(email.trim().toLowerCase(), password);
-      if (user.role === 'YATRI' || user.role === 'THERAPIST') {
+      const loggedInUser = await login(email.trim().toLowerCase(), password);
+      if (loggedInUser.role === 'YATRI' || loggedInUser.role === 'THERAPIST') {
         setError('This portal is for doctors and admin staff only. Please use the main login.');
         return;
       }
@@ -32,14 +53,13 @@ export default function AdminLoginPage() {
     } catch (err: any) {
       setError(err?.details?.message ?? err?.message ?? 'Invalid credentials.');
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center p-6">
       <div className="w-full max-w-md">
-        {/* Brand */}
         <div className="text-center mb-10">
           <Link href="/" className="inline-flex items-center gap-2.5">
             <div className="size-10 rounded-xl bg-emerald-900 text-white grid place-items-center text-lg font-serif">
@@ -52,7 +72,6 @@ export default function AdminLoginPage() {
           </Link>
         </div>
 
-        {/* Form card */}
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
           <div className="mb-8">
             <h1 className="text-xl font-semibold text-slate-900">Staff sign in</h1>
@@ -103,10 +122,10 @@ export default function AdminLoginPage() {
 
             <Button
               type="submit"
-              disabled={loading}
+              disabled={submitting}
               className="w-full bg-emerald-900 hover:bg-emerald-800 text-white rounded-xl py-2.5"
             >
-              {loading ? 'Signing in…' : 'Sign in'}
+              {submitting ? 'Signing in…' : 'Sign in'}
             </Button>
           </form>
 
@@ -119,11 +138,22 @@ export default function AdminLoginPage() {
           </div>
         </div>
 
-        {/* Footer note */}
         <p className="text-center text-xs text-slate-400 mt-8">
           © {new Date().getFullYear()} Amal Tamara Ayurveda. Authorized personnel only.
         </p>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <React.Suspense fallback={
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50/30 flex items-center justify-center p-6">
+        <div className="animate-spin size-8 rounded-full border-2 border-emerald-600 border-t-transparent" />
+      </div>
+    }>
+      <AdminLoginForm />
+    </React.Suspense>
   );
 }
