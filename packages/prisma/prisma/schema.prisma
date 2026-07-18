@@ -68,6 +68,7 @@ model User {
   sentMessages  DoctorMessage[]       @relation("Sender")
   receivedMsgs  DoctorMessage[]       @relation("Recipient")
   consultations Consultation[]        @relation("PatientConsultations")
+  doctorAssignments DoctorPatientAssignment[] @relation("PatientAssignments")
   communityPosts CommunityPost[]  
   comments      Comment[] 
   likes         Like[]
@@ -186,8 +187,27 @@ model DoctorProfile {
   consultations Consultation[]
   posts         CommunityPost[]      @relation("PostAuthorDoctor")
   articles      KnowledgeItem[]     @relation("DoctorArticles")
+  patients      DoctorPatientAssignment[]
 
   @@map("doctor_profiles")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Doctor-Patient Assignment
+// ─────────────────────────────────────────────────────────────────────────────
+
+model DoctorPatientAssignment {
+  id             String        @id @default(cuid())
+  doctorId       String
+  doctor         DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patientUserId  String
+  patient        User          @relation("PatientAssignments", fields: [patientUserId], references: [id], onDelete: Cascade)
+  assignedBy     String?
+  assignedAt     DateTime      @default(now())
+  notes          String?
+
+  @@unique([doctorId, patientUserId])
+  @@map("doctor_patient_assignments")
 }
 
 model TherapistProfile {

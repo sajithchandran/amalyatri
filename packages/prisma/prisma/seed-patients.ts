@@ -44,6 +44,27 @@ async function main() {
     include: { yatriProfile: true },
   });
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // Assign patients to doctors
+  // ══════════════════════════════════════════════════════════════════════════
+  // Aarti is assigned to both Dr. Devi and Dr. Arjun
+  await prisma.doctorPatientAssignment.create({
+    data: { doctorId: drDevi.doctorProfile!.id, patientUserId: aarti.id, assignedBy: drDevi.id, notes: 'Primary: post-Panchakarma follow-up' },
+  });
+  await prisma.doctorPatientAssignment.create({
+    data: { doctorId: drArjun.doctorProfile!.id, patientUserId: aarti.id, assignedBy: drArjun.id, notes: 'Secondary: stress & shoulder tension' },
+  });
+
+  // Ravi is assigned to Dr. Arjun
+  await prisma.doctorPatientAssignment.create({
+    data: { doctorId: drArjun.doctorProfile!.id, patientUserId: ravi.id, assignedBy: drArjun.id, notes: 'Stress management & gut health' },
+  });
+
+  // Lena is assigned to Dr. Devi
+  await prisma.doctorPatientAssignment.create({
+    data: { doctorId: drDevi.doctorProfile!.id, patientUserId: lena.id, assignedBy: drDevi.id, notes: 'Post-retreat long-distance care' },
+  });
+
   // Helper: create a message
   async function msg(senderId: string, recipientId: string, body: string, kind: 'TEXT' | 'VOICE' | 'IMAGE' | 'DOCUMENT' = 'TEXT', read = true, minutesAgo = 60) {
     return prisma.doctorMessage.create({
@@ -226,6 +247,7 @@ async function main() {
   console.log('   Messages:      Aarti ↔ Dr. Devi (6), Aarti ↔ Dr. Arjun (5), Ravi ↔ Dr. Arjun (8), Lena ↔ Dr. Devi (9)');
   console.log('   Consultations: 2 completed, 2 scheduled');
   console.log('   Goals:         6 wellness goals');
+  console.log('   Assignments:   Aarti → Dr. Devi & Dr. Arjun, Ravi → Dr. Arjun, Lena → Dr. Devi');
   console.log('   Timeline:      10 timeline events');
 }
 

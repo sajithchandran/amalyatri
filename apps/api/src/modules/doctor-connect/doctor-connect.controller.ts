@@ -73,4 +73,51 @@ export class DoctorConnectController {
       include: { doctor: true },
     });
   }
+
+  @Get('patients')
+  @ApiOperation({ summary: 'My assigned patients (doctor view)' })
+  async myPatients(@CurrentUser() user: AuthenticatedUser) {
+    // Get the doctor's profile
+    const doctor = await this.prisma.doctorProfile.findUnique({
+      where: { userId: user.id },
+    });
+    if (!doctor) return [];
+
+    // Get all assigned patients with their profiles, latest message, and consultations
+    const assignments = await this.prisma.doctorPatientAssignment.findMany({
+      where: { doctorId: doctor.id },
+      include: {
+        patient: {
+          include: {
+            yatriProfile: true,
+            receivedMsgs: {
+              orderBy: { createdAt: 'desc' },
+              take: 1,
+            },
+          },
+        },
+      },
+      orderBy: { assignedAt: 'desc' },
+    });
+
+    return Promise.all(assignments.map(async (a) => {
+      const consultationCount = await this.prisma.consultation.count({
+        where: { patientUserId: a.patientUserId, doctorProfileId: doctor.id },
+      });
+
+      return {
+        id: a.patient.id,
+        email: a.patient.email,
+        firstName: a.patient.yatriProfile?.firstName ?? '',
+        lastName: a.patient.yatriProfile?.lastName ?? '',
+        avatarUrl: a.patient.yatriProfile?.avatarUrl ?? null,
+        city: a.patient.yatriProfile?.city ?? null,
+        wellnessScore: a.patient.yatriProfile?.wellnessScore ?? 0,
+        lastMessage: a.patient.receivedMsgs[0] ?? null,
+        consultationCount,
+        assignedAt: a.assignedAt,
+        notes: a.notes,
+      };
+    }));
+  }
 }
