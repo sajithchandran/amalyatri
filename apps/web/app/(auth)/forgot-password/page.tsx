@@ -24,12 +24,12 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <Card className="border-none shadow-none bg-transparent p-0">
-      <CardHeader className="px-0">
+    <Card className="border-none shadow-none bg-transparent">
+      <CardHeader className="pb-3">
         <CardTitle>Reset your password</CardTitle>
-        <CardDescription>If your email is in our system, we’ll send you a quiet link.</CardDescription>
+        <CardDescription>If your email is in our system, we'll send you a quiet link.</CardDescription>
       </CardHeader>
-      <CardContent className="px-0">
+      <CardContent>
         {sent ? (
           <p className="text-sm text-ink/75">Check your inbox. The link works for one hour.</p>
         ) : (

@@ -25,7 +25,7 @@ export function Topbar({ onOpenDrawer }: { onOpenDrawer?: () => void }) {
   const displayName = user ? `${user.firstName ?? 'Yatri'} ${user.lastName ?? ''}`.trim() : 'Yatri';
 
   return (
-    <header className="sticky top-0 z-30 h-16 px-4 md:px-8 flex items-center justify-between gap-3 border-b border-forest-900/8 bg-cream/80 backdrop-blur-md">
+    <header className="sticky top-0 z-30 h-16 px-5 md:px-8 flex items-center justify-between gap-3 border-b border-forest-900/8 bg-cream/80 backdrop-blur-md">
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu" onClick={onOpenDrawer}>
           <Menu size={18} />

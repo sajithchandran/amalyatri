@@ -25,9 +25,9 @@ function Greeting({ name }: { name: string }) {
       <span className="text-xs uppercase tracking-[0.2em] text-forest-900/55">
         {h < 5 ? 'Late evening' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 21 ? 'Good evening' : 'Quiet night'}
       </span>
-      <h2 className="font-display text-display-md md:text-display-lg mt-2 text-balance">
+      <span className="font-display text-display-md md:text-display-lg mt-2 text-balance block">
         Welcome, {name}.
-      </h2>
+      </span>
       <p className="mt-2 text-ink/70 max-w-md text-pretty">{line}</p>
     </div>
   );
@@ -302,7 +302,7 @@ export default function DashboardPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-6 lg:col-span-2 min-w-0">
           {meQ.isLoading ? <CardSkeleton /> : <WellnessScore score={score} />}
           <TodayPlan />
           {timelineQ.isLoading ? (
@@ -317,7 +317,7 @@ export default function DashboardPage() {
           )}
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-6 min-w-0">
           <DailyInspiration />
           {messagesQ.isLoading ? (
             <CardSkeleton lines={3} />

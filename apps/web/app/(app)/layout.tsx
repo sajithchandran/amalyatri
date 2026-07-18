@@ -41,8 +41,8 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <MobileDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
       <div className="flex-1 min-w-0 flex flex-col">
         <Topbar onOpenDrawer={() => setDrawerOpen(true)} />
-        <main className="flex-1 min-w-0">
-          <div className="max-w-5xl mx-auto px-4 md:px-10 py-8 md:py-12">
+        <main className="flex-1 min-w-0 overflow-x-hidden">
+          <div className="max-w-5xl mx-auto px-5 md:px-10 py-8 md:py-12">
             {children}
           </div>
         </main>

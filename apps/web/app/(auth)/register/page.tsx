@@ -44,14 +44,14 @@ export default function RegisterPage() {
   }
 
   return (
-    <Card className="border-none shadow-none bg-transparent p-0">
-      <CardHeader className="px-0">
+    <Card className="border-none shadow-none bg-transparent">
+      <CardHeader className="pb-3">
         <CardTitle>Begin the lifelong journey</CardTitle>
         <CardDescription>
-          A few details and you’re in. Calm, free, always.
+          A few details and you're in. Calm, free, always.
         </CardDescription>
       </CardHeader>
-      <CardContent className="px-0">
+      <CardContent>
         <form onSubmit={onSubmit} className="space-y-4">
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
