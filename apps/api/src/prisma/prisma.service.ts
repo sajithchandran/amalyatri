@@ -58,6 +58,7 @@ export class PrismaService {
   get session() { return this.client.session; }
   get passwordResetToken() { return this.client.passwordResetToken; }
   get emailVerificationToken() { return this.client.emailVerificationToken; }
+  get doctorPatientAssignment() { return this.client.doctorPatientAssignment; }
 
   $transaction<T>(fn: (tx: PrismaClient) => Promise<T>): Promise<T> {
     return this.client.$transaction(fn);
