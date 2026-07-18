@@ -1,35 +1,69 @@
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { initials } from '@/lib/utils';
 
 const doctors = [
   {
     name: 'Dr. Reji Raj',
     role: 'General Manager & Sr Ayurveda Consultant',
-    bio: 'Over 19 years of experience at Taj Hotels and world-renowned properties. Specialises in Panchakarma, wellness programmes, Ayurvedic toxicology, and obesity management.',
+    experience: '19 years',
+    bio: 'BAMS, PG Diploma in Health Administration. Expertise in Panchakarma, wellness programmes, Ayurvedic toxicology, and obesity management.',
     specialties: ['Panchakarma', 'Wellness Programs', 'Ayurvedic Toxicology'],
-    initials: 'RR',
+    image: 'https://test.amaltamara.com/wp-content/uploads/2021/11/Amal_Tamara_Expertice_Doctors1.jpg',
   },
   {
     name: 'Dr. Ajitha Sunil Babu',
     role: 'Chief Medical Officer',
-    bio: 'Chief Medical Officer with 14+ years of experience. Trained in Reiki (3rd degree) and Pranic Healing. Specialises in Panchakarma, Ayurvedic ophthalmology, and gynaecology.',
+    experience: '14 years',
+    bio: 'BAMS, Reiki (3rd Degree), Pranic Healing. Specialises in Panchakarma, Ayurvedic ophthalmology, paediatrics, gynaecology.',
     specialties: ['Panchakarma', 'Ayurvedic Ophthalmology', 'Reiki'],
-    initials: 'AS',
+    image: 'https://test.amaltamara.com/wp-content/uploads/2021/11/Amal_Tamara_Expertice_Doctors3.jpg',
   },
   {
     name: 'Dr. Alvin',
     role: 'Sr. Ayurveda Physician & Hotel Manager',
-    bio: 'BAMS from Government Ayurveda College, Kannur and MBA in Health & Hospitality. Over 17 years of experience blending Eastern and Western wellness practices.',
+    experience: '17 years',
+    bio: 'BAMS, MBA in Health & Hospitality. Blends Eastern and Western practices. Trained in Thai Holistic Treatments.',
     specialties: ['Panchakarma', 'Spa Therapies', 'Wellness Management'],
-    initials: 'AL',
+    image: 'https://test.amaltamara.com/wp-content/uploads/2025/09/IMG_8237-scaled.jpg',
   },
   {
     name: 'Dr. Karthika S',
     role: 'Sr. Ayurveda Physician',
-    bio: 'BAMS, MD with 14+ years of experience. PhD scholar and former assistant professor. Specialises in Panchakarma and meditative wellness approaches.',
+    experience: '14 years',
+    bio: 'BAMS, MD. PhD scholar. Former assistant professor. Worked at National Research Institute of Panchakarma.',
     specialties: ['Panchakarma', 'Ayurvedic Consultations', 'Meditation'],
-    initials: 'KS',
+    image: 'https://test.amaltamara.com/wp-content/uploads/2024/07/2I4A1168-scaled.jpg',
+  },
+  {
+    name: 'Dr. Haripriya S Bonsalay',
+    role: 'Sr. Ayurveda Physician',
+    experience: '9 years',
+    bio: 'BAMS, Fellowship in Sports Rehabilitation. Expertise in Panchakarma, pain management, cosmetology, obesity management.',
+    specialties: ['Panchakarma', 'Pain Management', 'Cosmetology'],
+    image: 'https://test.amaltamara.com/wp-content/uploads/2021/11/Amal_Tamara_Expertice_Doctors4.jpg',
+  },
+  {
+    name: 'Dr. Devi Krishna',
+    role: 'Jr. Ayurveda Physician',
+    experience: '9 years',
+    bio: 'BAMS from Vidyaratnam Ayurveda College, Thrissur. Experience at leading wellness resorts as Spa Manager.',
+    specialties: ['Ayurvedic Consultations', 'Panchakarma', 'Spa Management'],
+    image: 'https://test.amaltamara.com/wp-content/uploads/2024/07/2I4A1214-scaled.jpg',
+  },
+  {
+    name: 'Dr. Deepesh NP',
+    role: 'Sr. Naturopathy Physician & Yoga Consultant',
+    experience: '10 years',
+    bio: 'BNYS. Specialises in acupuncture, pulse diagnosis, yoga therapy, aquatic yoga, and laughter yoga.',
+    specialties: ['Acupuncture', 'Yoga Therapy', 'Pulse Diagnosis'],
+    image: 'https://test.amaltamara.com/wp-content/uploads/2024/07/2I4A1258-scaled.jpg',
+  },
+  {
+    name: 'Dr. Atul Vivek',
+    role: 'Naturopathy Physician & Yoga Consultant',
+    experience: '8 years',
+    bio: 'BNYS. Expertise in therapy yoga, diet therapy, and hydro therapy.',
+    specialties: ['Therapy Yoga', 'Diet Therapy', 'Hydro Therapy'],
+    image: 'https://test.amaltamara.com/wp-content/uploads/2021/11/Amal_Tamara_Expertice_Doctors5.jpg',
   },
 ];
 
@@ -51,24 +85,34 @@ export function Doctors() {
           </p>
         </div>
 
-        <div className="mt-14 grid gap-6 md:grid-cols-2">
+        <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {doctors.map((d) => (
             <article
               key={d.name}
-              className="flex gap-6 rounded-3xl bg-white/70 backdrop-blur-sm border border-forest-900/8 p-7 shadow-soft hover:shadow-glow transition-shadow"
+              className="flex flex-col rounded-3xl bg-white/70 backdrop-blur-sm border border-forest-900/8 overflow-hidden shadow-soft hover:shadow-glow transition-shadow group"
             >
-              <Avatar className="size-20 ring-2 ring-forest-700/10">
-                <AvatarFallback className="bg-forest-100 text-forest-800 text-xl font-display">
-                  {d.initials}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <h3 className="font-display text-2xl text-forest-900">{d.name}</h3>
-                <p className="mt-0.5 text-sm uppercase tracking-widest text-forest-700/80">{d.role}</p>
-                <p className="mt-3 text-sm text-ink/75 leading-relaxed">{d.bio}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
+              <div className="aspect-[4/3] overflow-hidden bg-forest-50">
+                <img
+                  src={d.image}
+                  alt={d.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  loading="lazy"
+                />
+              </div>
+              <div className="p-5 flex-1 flex flex-col">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h3 className="font-display text-xl text-forest-900">{d.name}</h3>
+                    <p className="text-xs uppercase tracking-widest text-forest-700/80 mt-0.5">{d.role}</p>
+                  </div>
+                  <span className="shrink-0 text-[10px] uppercase tracking-wider bg-cream px-2 py-1 rounded-full text-forest-700/80 border border-forest-900/8">
+                    {d.experience}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-ink/75 leading-relaxed flex-1">{d.bio}</p>
+                <div className="mt-4 flex flex-wrap gap-1.5">
                   {d.specialties.map((s) => (
-                    <span key={s} className="text-xs px-2.5 py-1 rounded-full bg-cream border border-forest-900/10 text-forest-800">
+                    <span key={s} className="text-[11px] px-2.5 py-1 rounded-full bg-cream border border-forest-900/10 text-forest-800">
                       {s}
                     </span>
                   ))}
@@ -79,11 +123,11 @@ export function Doctors() {
         </div>
 
         <p className="mt-10 text-center text-sm text-ink/55">
-          Meet all 8 Amal Tamara physicians on{' '}
+          Meet the full team on{' '}
           <a href="https://test.amaltamara.com/expertise/" target="_blank" rel="noopener noreferrer"
              className="text-forest-700 hover:underline">
-            our expertise page
-          </a>.
+            Amal Tamara expertise page
+          </a>
         </p>
       </div>
     </section>

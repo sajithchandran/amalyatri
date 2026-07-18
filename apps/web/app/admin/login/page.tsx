@@ -138,7 +138,19 @@ function AdminLoginForm() {
           </div>
         </div>
 
-        <p className="text-center text-xs text-slate-400 mt-8">
+        <details className="mt-8 text-center">
+          <summary className="text-xs text-slate-400 cursor-pointer hover:text-slate-600">
+            Available staff accounts
+          </summary>
+          <div className="mt-3 text-[11px] text-slate-400 space-y-1">
+            <p>alvin@amaltamara.com · haripriya@amaltamara.com · karthika@amaltamara.com</p>
+            <p>devi.krishna@amaltamara.com · atul.vivek@amaltamara.com · deepesh@amaltamara.com</p>
+            <p>reji.raj@amaltamara.com · ajitha@amaltamara.com · admin@amalyatri.com</p>
+            <p className="text-emerald-700 font-medium mt-1">All passwords: amalwell2026</p>
+          </div>
+        </details>
+
+        <p className="text-center text-xs text-slate-400 mt-6">
           © {new Date().getFullYear()} Amal Tamara Ayurveda. Authorized personnel only.
         </p>
       </div>
