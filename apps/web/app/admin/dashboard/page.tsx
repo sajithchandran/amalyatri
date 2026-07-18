@@ -46,13 +46,14 @@ function StatCard({
 export default function AdminDashboardPage() {
   const { api, user } = useAuth();
 
-  const kpisQ = useQuery({
-    queryKey: ['admin', 'kpis'],
-    queryFn: () => api.get<{ totalPatients: number; activeConsultations: number; pendingMessages: number; upcomingEvents: number }>('/admin/kpis'),
+  // For doctors: get assigned patients. For admins: get all via admin endpoint.
+  const patientsQ = useQuery({
+    queryKey: ['doctor', 'patients'],
+    queryFn: () => api.get<any[]>('/doctor-connect/patients'),
   });
 
   const consultationsQ = useQuery({
-    queryKey: ['admin', 'consultations'],
+    queryKey: ['doctor', 'consultations'],
     queryFn: () => api.get<any[]>('/doctor-connect/consultations'),
   });
 
@@ -61,9 +62,12 @@ export default function AdminDashboardPage() {
     queryFn: () => api.get<any[]>('/doctor-connect/conversations'),
   });
 
-  const kpis = kpisQ.data;
+  const patients = patientsQ.data ?? [];
   const consultations = consultationsQ.data ?? [];
   const conversations = conversationsQ.data ?? [];
+  const totalPatients = patients.length;
+  const activeConsultations = consultations.filter((c: any) => c.status === 'SCHEDULED' || c.status === 'IN_PROGRESS').length;
+  const pendingMessages = conversations.reduce((sum: number, c: any) => sum + (c.unread ?? 0), 0);
 
   const name = user?.firstName ?? 'Staff';
 
@@ -83,29 +87,73 @@ export default function AdminDashboardPage() {
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          label="Total patients"
-          value={kpis?.totalPatients ?? '—'}
+          label="My patients"
+          value={totalPatients}
           icon={Users}
-          trend="up"
+          sub={totalPatients > 0 ? 'Assigned to you' : 'No patients yet'}
         />
         <StatCard
           label="Active consultations"
-          value={kpis?.activeConsultations ?? '—'}
+          value={activeConsultations}
           icon={Stethoscope}
-          sub="Requires attention"
+          sub={activeConsultations > 0 ? 'Requires attention' : 'None scheduled'}
         />
         <StatCard
           label="Unread messages"
-          value={kpis?.pendingMessages ?? '—'}
+          value={pendingMessages}
           icon={MessageCircle}
-          trend="up"
+          sub={pendingMessages > 0 ? 'From your patients' : 'All caught up'}
         />
         <StatCard
-          label="Upcoming events"
-          value={kpis?.upcomingEvents ?? '—'}
-          icon={CalendarDays}
+          label="Conversations"
+          value={conversations.length}
+          icon={MessageCircle}
+          sub="Active threads"
         />
       </div>
+
+      {/* My Patients */}
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <div>
+            <CardTitle>My patients</CardTitle>
+            <p className="text-sm text-slate-500 mt-0.5">{totalPatients} patient{totalPatients !== 1 ? 's' : ''} assigned to you</p>
+          </div>
+          <Button asChild size="sm" variant="ghost">
+            <Link href="/admin/patients">View all <ArrowUpRight size={14} /></Link>
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {patients.length === 0 ? (
+            <div className="text-center py-8">
+              <Users size={32} className="mx-auto text-slate-300" />
+              <p className="text-sm text-slate-500 mt-2">No patients assigned yet.</p>
+            </div>
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {patients.map((p: any) => (
+                <div key={p.id} className="flex items-center gap-4 px-4 py-4 rounded-xl border border-slate-100 hover:border-slate-200 hover:shadow-sm transition">
+                  <div className="size-11 rounded-full bg-emerald-100 text-emerald-700 grid place-items-center text-sm font-medium shrink-0">
+                    {p.firstName?.[0]}{p.lastName?.[0]}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-900 truncate">{p.firstName} {p.lastName}</p>
+                    {p.city && <p className="text-xs text-slate-500">{p.city}</p>}
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-1 text-xs">
+                        <span className="text-emerald-600 font-medium">{p.wellnessScore}</span>
+                        <span className="text-slate-400">score</span>
+                      </div>
+                      <span className="text-slate-300">·</span>
+                      <span className="text-xs text-slate-500">{p.consultationCount} consult{p.consultationCount !== 1 ? 's' : ''}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Recent consultations */}
