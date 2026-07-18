@@ -74,6 +74,54 @@ export class DoctorConnectController {
     });
   }
 
+  @Get('doctor-consultations')
+  @ApiOperation({ summary: 'Consultations for my patients (doctor view)' })
+  async doctorConsultations(@CurrentUser() user: AuthenticatedUser) {
+    const doctor = await this.prisma.doctorProfile.findUnique({
+      where: { userId: user.id },
+    });
+    if (!doctor) return [];
+
+    return this.prisma.consultation.findMany({
+      where: { doctorProfileId: doctor.id },
+      orderBy: [{ scheduledFor: 'desc' }, { createdAt: 'desc' }],
+      include: {
+        patient: {
+          include: { yatriProfile: true },
+        },
+      },
+    });
+  }
+
+  @Post('doctor-consultations')
+  @ApiOperation({ summary: 'Create a consultation as a doctor' })
+  async createConsultation(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: { patientUserId: string; mode?: string; scheduledFor?: string; patientNote?: string; doctorNote?: string },
+  ) {
+    const doctor = await this.prisma.doctorProfile.findUnique({
+      where: { userId: user.id },
+    });
+    if (!doctor) throw new Error('Doctor profile not found');
+
+    return this.prisma.consultation.create({
+      data: {
+        patientUserId: dto.patientUserId,
+        doctorProfileId: doctor.id,
+        mode: (dto.mode as any) ?? 'VIDEO',
+        scheduledFor: dto.scheduledFor ? new Date(dto.scheduledFor) : null,
+        patientNote: dto.patientNote,
+        doctorNote: dto.doctorNote,
+        status: 'SCHEDULED',
+      },
+      include: {
+        patient: {
+          include: { yatriProfile: true },
+        },
+      },
+    });
+  }
+
   @Get('patients')
   @ApiOperation({ summary: 'My assigned patients (doctor view)' })
   async myPatients(@CurrentUser() user: AuthenticatedUser) {
