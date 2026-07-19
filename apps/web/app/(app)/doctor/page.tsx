@@ -106,12 +106,12 @@ export default function DoctorListPage() {
           {list.map((d) => (
             <Card key={d.id} className="overflow-hidden hover:shadow-glow transition-shadow group">
               {/* Photo area */}
-              <div className="aspect-[16/9] bg-gradient-to-br from-forest-50 to-cream overflow-hidden">
+              <div className="aspect-[4/5] bg-gradient-to-br from-forest-50 to-cream overflow-hidden">
                 {d.avatarUrl ? (
                   <img
                     src={d.avatarUrl}
                     alt={`Dr. ${d.firstName} ${d.lastName}`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center">
