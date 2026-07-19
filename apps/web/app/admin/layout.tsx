@@ -7,7 +7,7 @@ import { usePathname } from 'next/navigation';
 import { useAuth } from '@/lib/auth-context';
 import {
   LayoutDashboard, Stethoscope, MessageCircle, CalendarDays, Users,
-  Settings, LogOut, Bell, Menu, User as UserIcon,
+  Settings, LogOut, Bell, Menu, User as UserIcon, Yoga,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -19,6 +19,7 @@ const ADMIN_NAV = [
   { href: '/admin/patients',     label: 'Patients',      icon: Users },
   { href: '/admin/consultations',label: 'Consultations',  icon: Stethoscope },
   { href: '/admin/messages',      label: 'Messages',      icon: MessageCircle },
+  { href: '/admin/yoga',          label: 'Yoga',           icon: Yoga },
   { href: '/admin/schedule',     label: 'Schedule',      icon: CalendarDays },
   { href: '/admin/settings',     label: 'Settings',      icon: Settings },
 ];

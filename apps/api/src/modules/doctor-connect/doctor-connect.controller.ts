@@ -198,4 +198,57 @@ export class DoctorConnectController {
       };
     }));
   }
+
+  @Post('yoga-recommendations')
+  @ApiOperation({ summary: 'Recommend a yoga session to a patient' })
+  async recommendYoga(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: { patientUserId: string; title: string; description?: string; imageUrl: string; durationMin?: number; difficulty?: string; tags?: string[] },
+  ) {
+    const doctor = await this.prisma.doctorProfile.findUnique({ where: { userId: user.id } });
+    if (!doctor) throw new Error('Doctor profile not found');
+
+    return this.prisma.yogaRecommendation.create({
+      data: {
+        doctorId: doctor.id,
+        patientUserId: dto.patientUserId,
+        title: dto.title,
+        description: dto.description,
+        imageUrl: dto.imageUrl,
+        durationMin: dto.durationMin ?? 15,
+        difficulty: dto.difficulty ?? 'beginner',
+        tags: dto.tags ?? [],
+      },
+      include: {
+        doctor: { select: { firstName: true, lastName: true, avatarUrl: true } },
+      },
+    });
+  }
+
+  @Get('yoga-recommendations')
+  @ApiOperation({ summary: 'My yoga recommendations (doctor view)' })
+  async myYogaRecommendations(@CurrentUser() user: AuthenticatedUser) {
+    const doctor = await this.prisma.doctorProfile.findUnique({ where: { userId: user.id } });
+    if (!doctor) return [];
+
+    return this.prisma.yogaRecommendation.findMany({
+      where: { doctorId: doctor.id },
+      orderBy: { date: 'desc' },
+      include: {
+        patient: { select: { id: true, email: true, yatriProfile: { select: { firstName: true, lastName: true } } } },
+      },
+    });
+  }
+
+  @Get('my-yoga')
+  @ApiOperation({ summary: 'Yoga recommended to me (patient view)' })
+  async myYoga(@CurrentUser() user: AuthenticatedUser) {
+    return this.prisma.yogaRecommendation.findMany({
+      where: { patientUserId: user.id },
+      orderBy: { date: 'desc' },
+      include: {
+        doctor: { select: { firstName: true, lastName: true, avatarUrl: true } },
+      },
+    });
+  }
 }

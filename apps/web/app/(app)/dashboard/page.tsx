@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { Calendar, MessageCircle, Sparkles, Wind, BookOpen, ArrowUpRight, Heart, Activity, Bell, ChefHat, Stethoscope } from 'lucide-react';
+import { Calendar, MessageCircle, Sparkles, Wind, BookOpen, ArrowUpRight, Heart, Activity, Bell, ChefHat, Stethoscope, Yoga } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 import { CardSkeleton } from '@/components/app/loading';
@@ -13,6 +13,50 @@ import { formatRelative } from '@/lib/utils';
 import type { Community, Conversation, EventItem, KnowledgeItem, Notification, TimelineEvent } from '@/lib/types';
 
 // ─── Sub-components (kept inline so the dashboard stays one cohesive page) ──
+
+function DailyYoga({ items }: { items: any[] }) {
+  if (items.length === 0) return null;
+  const latest = items[0];
+  return (
+    <Card className="overflow-hidden group">
+      {latest.imageUrl && (
+        <div className="aspect-[16/9] bg-forest-50 overflow-hidden">
+          <img src={latest.imageUrl} alt={latest.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+        </div>
+      )}
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-forest-700/70 font-medium">Today&apos;s yoga</p>
+            <h3 className="font-display text-xl text-forest-900 mt-1">{latest.title}</h3>
+          </div>
+          <div className="flex items-center gap-1 shrink-0 bg-cream rounded-full px-2.5 py-1 text-xs text-forest-700">
+            <Yoga size={14} /> {latest.durationMin} min
+          </div>
+        </div>
+        {latest.description && (
+          <p className="mt-2 text-sm text-ink/70">{latest.description}</p>
+        )}
+        <div className="flex items-center gap-3 mt-3 text-xs text-ink/55">
+          <span>Recommended by Dr. {latest.doctor?.firstName} {latest.doctor?.lastName}</span>
+          {latest.difficulty && (
+            <>
+              <span className="text-ink/30">·</span>
+              <span className="capitalize">{latest.difficulty}</span>
+            </>
+          )}
+        </div>
+        {latest.tags?.length > 0 && (
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {latest.tags.map((t: string) => (
+              <span key={t} className="text-[11px] px-2.5 py-0.5 rounded-full bg-cream border border-forest-900/8 text-forest-700">{t}</span>
+            ))}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 function CareTeam({ doctors }: { doctors: any[] }) {
   if (doctors.length === 0) return null;
@@ -324,6 +368,7 @@ export default function DashboardPage() {
   const eventsQ        = useQuery({ queryKey: ['events','upcoming'], queryFn: () => api.get<EventItem[]>('/events?upcoming=true') });
   const messagesQ      = useQuery({ queryKey: ['doctor','conversations'], queryFn: () => api.get<Conversation[]>('/doctor-connect/conversations') });
   const myDoctorsQ     = useQuery({ queryKey: ['doctor','my-doctors'], queryFn: () => api.get<any[]>('/doctor-connect/my-doctors') });
+  const myYogaQ        = useQuery({ queryKey: ['my-yoga'], queryFn: () => api.get<any[]>('/doctor-connect/my-yoga') });
   const communitiesQ   = useQuery({ queryKey: ['communities','mine'], queryFn: () => api.get<Community[]>('/communities/mine') });
   const knowledgeQ     = useQuery({ queryKey: ['knowledge','featured'], queryFn: () => api.get<KnowledgeItem[]>('/knowledge/featured') });
   const notificationsQ = useQuery({ queryKey: ['notifications','unread'], queryFn: () => api.get<Notification[]>('/notifications?onlyUnread=true') });
@@ -358,6 +403,11 @@ export default function DashboardPage() {
 
         <div className="space-y-6 min-w-0">
           <DailyInspiration />
+          {myYogaQ.isLoading ? (
+            <CardSkeleton lines={3} />
+          ) : (
+            <DailyYoga items={myYogaQ.data ?? []} />
+          )}
           {myDoctorsQ.isLoading ? (
             <CardSkeleton lines={3} />
           ) : (

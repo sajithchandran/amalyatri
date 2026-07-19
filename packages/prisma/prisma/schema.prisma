@@ -69,6 +69,7 @@ model User {
   receivedMsgs  DoctorMessage[]       @relation("Recipient")
   consultations Consultation[]        @relation("PatientConsultations")
   doctorAssignments DoctorPatientAssignment[] @relation("PatientAssignments")
+  yogaRecommendations YogaRecommendation[] @relation("PatientYogaRecommendations")
   communityPosts CommunityPost[]  
   comments      Comment[] 
   likes         Like[]
@@ -188,6 +189,7 @@ model DoctorProfile {
   posts         CommunityPost[]      @relation("PostAuthorDoctor")
   articles      KnowledgeItem[]     @relation("DoctorArticles")
   patients      DoctorPatientAssignment[]
+  yogaRecommendations YogaRecommendation[]
 
   @@map("doctor_profiles")
 }
@@ -208,6 +210,32 @@ model DoctorPatientAssignment {
 
   @@unique([doctorId, patientUserId])
   @@map("doctor_patient_assignments")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Yoga Recommendations (doctor → patient)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model YogaRecommendation {
+  id             String        @id @default(cuid())
+  doctorId       String
+  doctor         DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patientUserId  String
+  patient        User          @relation("PatientYogaRecommendations", fields: [patientUserId], references: [id], onDelete: Cascade)
+  title          String
+  description    String?
+  imageUrl       String
+  durationMin    Int?          @default(15)
+  difficulty     String?       @default("beginner")
+  tags           String[]
+  date           DateTime      @default(now())
+  completedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([patientUserId, date])
+  @@index([doctorId])
+  @@map("yoga_recommendations")
 }
 
 model TherapistProfile {
