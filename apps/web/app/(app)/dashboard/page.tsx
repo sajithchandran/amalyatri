@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { Calendar, MessageCircle, Sparkles, Wind, BookOpen, ArrowUpRight, Heart, Activity, Bell, ChefHat, Stethoscope, Yoga } from 'lucide-react';
+import { Calendar, MessageCircle, Sparkles, Wind, BookOpen, ArrowUpRight, Heart, Activity, Bell, ChefHat, Stethoscope, Sun } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 import { CardSkeleton } from '@/components/app/loading';
@@ -31,7 +31,7 @@ function DailyYoga({ items }: { items: any[] }) {
             <h3 className="font-display text-xl text-forest-900 mt-1">{latest.title}</h3>
           </div>
           <div className="flex items-center gap-1 shrink-0 bg-cream rounded-full px-2.5 py-1 text-xs text-forest-700">
-            <Yoga size={14} /> {latest.durationMin} min
+            <Sun size={14} /> {latest.durationMin} min
           </div>
         </div>
         {latest.description && (

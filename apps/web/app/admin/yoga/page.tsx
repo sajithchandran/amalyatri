@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Yoga, Plus, Clock, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+import { Sun, Plus, Clock, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -131,7 +131,7 @@ export default function YogaRecommendPage() {
               {r.imageUrl ? (
                 <img src={r.imageUrl} alt={r.title} className="w-full h-full object-cover" />
               ) : (
-                <div className="w-full h-full grid place-items-center text-slate-300"><Yoga size={40} /></div>
+                <div className="w-full h-full grid place-items-center text-slate-300"><Sun size={40} /></div>
               )}
             </div>
             <CardContent className="p-4">
@@ -169,7 +169,7 @@ export default function YogaRecommendPage() {
       {recs.length === 0 && !showForm && (
         <Card>
           <CardContent className="py-16 text-center">
-            <Yoga size={40} className="mx-auto text-slate-300" />
+            <Sun size={40} className="mx-auto text-slate-300" />
             <h2 className="mt-4 text-lg font-medium text-slate-900">No recommendations yet</h2>
             <p className="text-sm text-slate-500 mt-1">Recommend yoga sessions to help your patients stay consistent.</p>
             <Button onClick={() => setShowForm(true)} className="mt-4 bg-emerald-900 hover:bg-emerald-800">
