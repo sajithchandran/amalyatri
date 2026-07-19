@@ -100,8 +100,8 @@ export function Doctors() {
               key={d.name}
               className="flex flex-col rounded-2xl bg-white/70 backdrop-blur-sm border border-forest-900/8 overflow-hidden shadow-soft hover:shadow-glow transition-shadow group"
             >
-              {/* Photo — same aspect ratio as /doctor page */}
-              <div className="aspect-[16/9] bg-gradient-to-br from-forest-50 to-cream overflow-hidden">
+              {/* Photo — portrait-friendly for doctor headshots */}
+              <div className="aspect-[3/4] bg-gradient-to-br from-forest-50 to-cream overflow-hidden">
                 <img
                   src={d.image}
                   alt={d.name}
@@ -110,24 +110,18 @@ export function Doctors() {
                 />
               </div>
 
-              {/* Info — same structure as /doctor page */}
+              {/* Info */}
               <div className="p-5 flex-1 flex flex-col">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-display text-xl text-forest-900 leading-tight">
-                      {d.name}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-1 text-xs text-ink/55 flex-wrap">
-                      <span className="flex items-center gap-1">
-                        {d.experience}
-                      </span>
-                      <span className="text-ink/30">·</span>
-                      <span className="text-ink/55">{d.qualifications}</span>
-                    </div>
-                  </div>
-                  <span className="shrink-0 text-[10px] uppercase tracking-wider bg-cream px-2 py-1 rounded-full text-forest-700/80 border border-forest-900/8 whitespace-nowrap">
-                    {d.role.split('·')[0].trim()}
-                  </span>
+                <span className="text-[10px] uppercase tracking-[0.15em] text-forest-700/70 font-medium">
+                  {d.role}
+                </span>
+                <h3 className="font-display text-xl text-forest-900 leading-tight mt-1">
+                  {d.name}
+                </h3>
+                <div className="flex items-center gap-2 mt-1 text-xs text-ink/55 flex-wrap">
+                  <span>{d.experience}</span>
+                  <span className="text-ink/30">·</span>
+                  <span>{d.qualifications}</span>
                 </div>
 
                 <p className="mt-3 text-sm text-ink/75 leading-relaxed flex-1">
