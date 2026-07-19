@@ -213,8 +213,25 @@ model DoctorPatientAssignment {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Yoga Recommendations (doctor → patient)
+// Yoga Master Catalog & Recommendations
 // ─────────────────────────────────────────────────────────────────────────────
+
+model YogaPose {
+  id          String   @id @default(cuid())
+  title       String
+  imageUrl    String
+  description String?
+  durationMin Int?     @default(15)
+  difficulty  String?  @default("beginner")
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  recommendations YogaRecommendationPose[]
+
+  @@index([title])
+  @@map("yoga_poses")
+}
 
 model YogaRecommendation {
   id             String        @id @default(cuid())
@@ -222,20 +239,28 @@ model YogaRecommendation {
   doctor         DoctorProfile @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   patientUserId  String
   patient        User          @relation("PatientYogaRecommendations", fields: [patientUserId], references: [id], onDelete: Cascade)
-  title          String
-  description    String?
-  imageUrl       String
-  durationMin    Int?          @default(15)
-  difficulty     String?       @default("beginner")
-  tags           String[]
+  note           String?       // doctor's personal note for this recommendation
   date           DateTime      @default(now())
   completedAt    DateTime?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
+  poses YogaRecommendationPose[]
+
   @@index([patientUserId, date])
   @@index([doctorId])
   @@map("yoga_recommendations")
+}
+
+model YogaRecommendationPose {
+  recommendationId String
+  recommendation  YogaRecommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+  poseId          String
+  pose            YogaPose           @relation(fields: [poseId], references: [id], onDelete: Cascade)
+  order           Int                @default(0)
+
+  @@id([recommendationId, poseId])
+  @@map("yoga_recommendation_poses")
 }
 
 model TherapistProfile {

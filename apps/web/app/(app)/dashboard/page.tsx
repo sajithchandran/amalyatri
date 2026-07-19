@@ -17,42 +17,58 @@ import type { Community, Conversation, EventItem, KnowledgeItem, Notification, T
 function DailyYoga({ items }: { items: any[] }) {
   if (items.length === 0) return null;
   const latest = items[0];
+  const poses = latest.poses || [];
+  const totalMin = poses.reduce((sum: number, rp: any) => sum + (rp.pose?.durationMin || 0), 0);
+
   return (
-    <Card className="overflow-hidden group">
-      {latest.imageUrl && (
-        <div className="aspect-[16/9] bg-forest-50 overflow-hidden">
-          <img src={latest.imageUrl} alt={latest.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-        </div>
-      )}
+    <Card className="overflow-hidden">
       <CardContent className="p-5">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <p className="text-xs uppercase tracking-wider text-forest-700/70 font-medium">Today&apos;s yoga</p>
-            <h3 className="font-display text-xl text-forest-900 mt-1">{latest.title}</h3>
+            <p className="text-xs text-ink/55 mt-0.5">Recommended by Dr. {latest.doctor?.firstName} {latest.doctor?.lastName}</p>
           </div>
           <div className="flex items-center gap-1 shrink-0 bg-cream rounded-full px-2.5 py-1 text-xs text-forest-700">
-            <Sun size={14} /> {latest.durationMin} min
+            <Sun size={14} /> {totalMin} min
           </div>
         </div>
-        {latest.description && (
-          <p className="mt-2 text-sm text-ink/70">{latest.description}</p>
+
+        {latest.note && (
+          <p className="text-sm text-ink/70 bg-cream/80 rounded-xl px-4 py-3 mb-3 border border-forest-900/5">{latest.note}</p>
         )}
-        <div className="flex items-center gap-3 mt-3 text-xs text-ink/55">
-          <span>Recommended by Dr. {latest.doctor?.firstName} {latest.doctor?.lastName}</span>
-          {latest.difficulty && (
-            <>
-              <span className="text-ink/30">·</span>
-              <span className="capitalize">{latest.difficulty}</span>
-            </>
-          )}
+
+        <div className="grid gap-3">
+          {poses.map((rp: any) => (
+            <div key={rp.poseId} className="flex items-center gap-4 p-3 rounded-2xl bg-white/70 border border-forest-900/8 hover:border-forest-700/20 transition">
+              <div className="size-16 rounded-xl overflow-hidden bg-forest-50 shrink-0">
+                {rp.pose?.imageUrl ? (
+                  <img src={rp.pose.imageUrl} alt={rp.pose.title} className="size-full object-cover" />
+                ) : (
+                  <div className="size-full grid place-items-center text-forest-300"><Sun size={20} /></div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-forest-900">{rp.pose?.title || 'Yoga pose'}</p>
+                <div className="flex items-center gap-2 mt-0.5 text-xs text-ink/55">
+                  <span>{rp.pose?.durationMin} min</span>
+                  {rp.pose?.difficulty && (
+                    <>
+                      <span className="text-ink/30">·</span>
+                      <span className="capitalize">{rp.pose.difficulty}</span>
+                    </>
+                  )}
+                </div>
+                {rp.pose?.tags?.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1.5">
+                    {rp.pose.tags.map((t: string) => (
+                      <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-cream border border-forest-900/8 text-forest-600">{t}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
-        {latest.tags?.length > 0 && (
-          <div className="flex flex-wrap gap-1.5 mt-3">
-            {latest.tags.map((t: string) => (
-              <span key={t} className="text-[11px] px-2.5 py-0.5 rounded-full bg-cream border border-forest-900/8 text-forest-700">{t}</span>
-            ))}
-          </div>
-        )}
       </CardContent>
     </Card>
   );

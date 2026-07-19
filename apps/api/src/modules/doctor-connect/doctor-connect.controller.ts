@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -199,30 +200,68 @@ export class DoctorConnectController {
     }));
   }
 
-  @Post('yoga-recommendations')
-  @ApiOperation({ summary: 'Recommend a yoga session to a patient' })
-  async recommendYoga(
-    @CurrentUser() user: AuthenticatedUser,
-    @Body() dto: { patientUserId: string; title: string; description?: string; imageUrl: string; durationMin?: number; difficulty?: string; tags?: string[] },
-  ) {
-    const doctor = await this.prisma.doctorProfile.findUnique({ where: { userId: user.id } });
-    if (!doctor) throw new Error('Doctor profile not found');
+  // ── Yoga Pose Master Catalog ──────────────────────────────────────────
 
-    return this.prisma.yogaRecommendation.create({
+  @Get('yoga-poses')
+  @ApiOperation({ summary: 'List all yoga poses in the master catalog' })
+  async listYogaPoses() {
+    return this.prisma.yogaPose.findMany({ orderBy: { title: 'asc' } });
+  }
+
+  @Post('yoga-poses')
+  @ApiOperation({ summary: 'Create a yoga pose in the master catalog' })
+  async createYogaPose(@Body() dto: { title: string; imageUrl: string; description?: string; durationMin?: number; difficulty?: string; tags?: string[] }) {
+    return this.prisma.yogaPose.create({
       data: {
-        doctorId: doctor.id,
-        patientUserId: dto.patientUserId,
         title: dto.title,
-        description: dto.description,
         imageUrl: dto.imageUrl,
+        description: dto.description,
         durationMin: dto.durationMin ?? 15,
         difficulty: dto.difficulty ?? 'beginner',
         tags: dto.tags ?? [],
       },
+    });
+  }
+
+  @Delete('yoga-poses/:id')
+  @ApiOperation({ summary: 'Delete a yoga pose from the master catalog' })
+  async deleteYogaPose(@Param('id') id: string) {
+    return this.prisma.yogaPose.delete({ where: { id } });
+  }
+
+  // ── Yoga Recommendations (doctor → patient, multi-pose) ────────────────
+
+  @Post('yoga-recommendations')
+  @ApiOperation({ summary: 'Recommend yoga poses to a patient' })
+  async recommendYoga(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: { patientUserId: string; poseIds: string[]; note?: string },
+  ) {
+    const doctor = await this.prisma.doctorProfile.findUnique({ where: { userId: user.id } });
+    if (!doctor) throw new Error('Doctor profile not found');
+
+    const recommendation = await this.prisma.yogaRecommendation.create({
+      data: {
+        doctorId: doctor.id,
+        patientUserId: dto.patientUserId,
+        note: dto.note,
+        poses: {
+          create: dto.poseIds.map((poseId, i) => ({
+            poseId,
+            order: i,
+          })),
+        },
+      },
       include: {
+        poses: {
+          include: { pose: true },
+          orderBy: { order: 'asc' },
+        },
         doctor: { select: { firstName: true, lastName: true, avatarUrl: true } },
       },
     });
+
+    return recommendation;
   }
 
   @Get('yoga-recommendations')
@@ -235,6 +274,10 @@ export class DoctorConnectController {
       where: { doctorId: doctor.id },
       orderBy: { date: 'desc' },
       include: {
+        poses: {
+          include: { pose: true },
+          orderBy: { order: 'asc' },
+        },
         patient: { select: { id: true, email: true, yatriProfile: { select: { firstName: true, lastName: true } } } },
       },
     });
@@ -247,6 +290,10 @@ export class DoctorConnectController {
       where: { patientUserId: user.id },
       orderBy: { date: 'desc' },
       include: {
+        poses: {
+          include: { pose: true },
+          orderBy: { order: 'asc' },
+        },
         doctor: { select: { firstName: true, lastName: true, avatarUrl: true } },
       },
     });
