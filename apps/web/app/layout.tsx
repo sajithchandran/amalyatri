@@ -29,7 +29,10 @@ export const metadata: Metadata = {
     description: 'The lifelong wellness companion for every Amal Tamara guest.',
     type: 'website',
   },
-  icons: { icon: '/favicon.ico' },
+  icons: {
+    icon: '/favicon.svg',
+    shortcut: '/favicon.svg',
+  },
 };
 
 export const viewport: Viewport = {
