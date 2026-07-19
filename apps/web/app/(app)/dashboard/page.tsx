@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { Calendar, MessageCircle, Sparkles, Wind, BookOpen, ArrowUpRight, Heart, Activity, Bell, ChefHat, Stethoscope } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
-import { PageHeader } from '@/components/app/page-header';
+
 import { CardSkeleton } from '@/components/app/loading';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -61,19 +61,15 @@ function CareTeam({ doctors }: { doctors: any[] }) {
 
 function Greeting({ name }: { name: string }) {
   const h = new Date().getHours();
-  const line =
-    h < 12 ? 'A quiet morning. A calm body begins with how you meet it.'
-  : h < 17 ? 'A gentle afternoon. Tend to something small.'
-           : 'A still evening. Let the day settle.';
+  const time = h < 5 ? 'Late evening' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 21 ? 'Good evening' : 'Quiet night';
   return (
-    <div className="flex flex-col">
-      <span className="text-xs uppercase tracking-[0.2em] text-forest-900/55">
-        {h < 5 ? 'Late evening' : h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : h < 21 ? 'Good evening' : 'Quiet night'}
+    <div className="flex items-baseline gap-3 flex-wrap">
+      <h1 className="font-display text-display-md md:text-display-lg text-forest-900">
+        {time}, {name}.
+      </h1>
+      <span className="text-sm text-ink/55">
+        {h < 12 ? 'A calm start.' : h < 17 ? 'A gentle pace.' : 'A still evening.'}
       </span>
-      <span className="font-display text-display-md md:text-display-lg mt-2 text-balance block">
-        Welcome, {name}.
-      </span>
-      <p className="mt-2 text-ink/70 max-w-md text-pretty">{line}</p>
     </div>
   );
 }
@@ -337,15 +333,12 @@ export default function DashboardPage() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Today"
-        title={<Greeting name={name} />}
-        actions={
-          <Button asChild variant="ghost" size="sm" className="self-end sm:self-auto">
-            <Link href="/timeline">View your path <ArrowUpRight size={14} /></Link>
-          </Button>
-        }
-      />
+      <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+        <Greeting name={name} />
+        <Button asChild variant="ghost" size="sm">
+          <Link href="/timeline">View your path <ArrowUpRight size={14} /></Link>
+        </Button>
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2 min-w-0">
