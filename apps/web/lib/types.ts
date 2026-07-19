@@ -74,6 +74,8 @@ export interface Doctor {
   yearsOfPractice: number;
   avatarUrl?: string;
   availableForChat: boolean;
+  bio?: string;
+  email?: string;
 }
 
 export interface KnowledgeItem {
