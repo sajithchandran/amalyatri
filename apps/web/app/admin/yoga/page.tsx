@@ -67,10 +67,10 @@ export default function YogaPage() {
           <p className="text-sm text-slate-500 mt-1">Master catalog & patient recommendations</p>
         </div>
         <div className="flex gap-2">
-          <Button variant={tab === 'catalog' ? 'default' : 'outline'} onClick={() => setTab('catalog')} className={tab === 'catalog' ? 'bg-emerald-900' : ''}>
+          <Button variant={tab === 'catalog' ? 'primary' : 'outline'} onClick={() => setTab('catalog')} className={tab === 'catalog' ? 'bg-emerald-900' : ''}>
             <BookOpen size={16} /> Catalog
           </Button>
-          <Button variant={tab === 'recommend' ? 'default' : 'outline'} onClick={() => setTab('recommend')} className={tab === 'recommend' ? 'bg-emerald-900' : ''}>
+          <Button variant={tab === 'recommend' ? 'primary' : 'outline'} onClick={() => setTab('recommend')} className={tab === 'recommend' ? 'bg-emerald-900' : ''}>
             <Sun size={16} /> Recommend
           </Button>
         </div>
