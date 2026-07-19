@@ -22,7 +22,7 @@ export default function DoctorListPage() {
 
   const doctorsQ = useQuery({
     queryKey: ['doctors'],
-    queryFn: () => api.get<Array<Doctor & { user: { email: string } }>>('/doctor-connect/doctors'),
+    queryFn: () => api.get<Doctor[]>('/doctor-connect/doctors'),
   });
   const convsQ = useQuery({
     queryKey: ['conversations'],
@@ -64,11 +64,11 @@ export default function DoctorListPage() {
               >
                 <Avatar className="size-10">
                   <AvatarFallback className="bg-forest-100 text-forest-800 text-xs">
-                    {initials(c.otherName ?? 'Dr')}
+                    Dr
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-ink truncate">{c.otherName ?? 'Doctor'}</p>
+                  <p className="text-sm font-medium text-ink truncate">Doctor</p>
                   {c.lastMessage && (
                     <p className="text-xs text-ink/55 truncate">{c.lastMessage.body ?? 'Voice note'}</p>
                   )}
@@ -137,7 +137,7 @@ export default function DoctorListPage() {
                       </span>
                       <span className="text-ink/30">·</span>
                       <span className="flex items-center gap-1">
-                        <Mail size={12} className="shrink-0" /> {d.email || d.user?.email || ''}
+                        <Mail size={12} className="shrink-0" /> {d.qualifications?.split(',')[0] || ''}
                       </span>
                     </div>
                   </div>
