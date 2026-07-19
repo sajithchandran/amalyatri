@@ -49,23 +49,32 @@ export interface ApiError {
 const TOKEN_KEY = 'amalyatri:access';
 const REFRESH_KEY = 'amalyatri:refresh';
 
-export function getAccessToken(): string | null {
+/**
+ * Uses sessionStorage (per-tab) instead of localStorage (shared across tabs)
+ * so a Yatri tab and a Doctor tab can stay logged in simultaneously.
+ */
+function storage() {
   if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(TOKEN_KEY);
+  return window.sessionStorage;
+}
+
+export function getAccessToken(): string | null {
+  const s = storage(); if (!s) return null;
+  return s.getItem(TOKEN_KEY);
 }
 export function setAccessToken(token: string | null) {
-  if (typeof window === 'undefined') return;
-  if (token === null) window.localStorage.removeItem(TOKEN_KEY);
-  else window.localStorage.setItem(TOKEN_KEY, token);
+  const s = storage(); if (!s) return;
+  if (token === null) s.removeItem(TOKEN_KEY);
+  else s.setItem(TOKEN_KEY, token);
 }
 export function getRefreshToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(REFRESH_KEY);
+  const s = storage(); if (!s) return null;
+  return s.getItem(REFRESH_KEY);
 }
 export function setRefreshToken(token: string | null) {
-  if (typeof window === 'undefined') return;
-  if (token === null) window.localStorage.removeItem(REFRESH_KEY);
-  else window.localStorage.setItem(REFRESH_KEY, token);
+  const s = storage(); if (!s) return;
+  if (token === null) s.removeItem(REFRESH_KEY);
+  else s.setItem(REFRESH_KEY, token);
 }
 
 type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
