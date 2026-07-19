@@ -44,8 +44,8 @@ const yogaPoses = [
     tags: ['strength', 'legs', 'hips', 'standing'],
   },
   {
-    title: 'Child\'s Pose (Balasana)',
-    imageUrl: 'https://images.unsplash.com/photo-1588286840104-8957b019727f?w=800&q=80',
+    title: "Child's Pose (Balasana)",
+    imageUrl: 'https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?w=800&q=80',
     description: 'A gentle resting pose that stretches the back, hips, and thighs while calming the mind.',
     durationMin: 3,
     difficulty: 'beginner',
@@ -53,7 +53,7 @@ const yogaPoses = [
   },
   {
     title: 'Cat-Cow Stretch (Marjaryasana-Bitilasana)',
-    imageUrl: 'https://images.unsplash.com/photo-1593811167562-9cef47bfc4d7?w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1552196563-55cd4e45efb3?w=800&q=80',
     description: 'A gentle spinal warm-up that improves flexibility and relieves back tension.',
     durationMin: 5,
     difficulty: 'beginner',
@@ -77,7 +77,7 @@ const yogaPoses = [
   },
   {
     title: 'Seated Forward Fold (Paschimottanasana)',
-    imageUrl: 'https://images.unsplash.com/photo-1552196563-55cd4e45efb3?w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
     description: 'A calming seated pose that stretches the entire back body and hamstrings.',
     durationMin: 5,
     difficulty: 'beginner',
@@ -85,7 +85,7 @@ const yogaPoses = [
   },
   {
     title: 'Cobra Pose (Bhujangasana)',
-    imageUrl: 'https://images.unsplash.com/photo-1593164842264-8545db99f66e?w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1588286840104-8957b019727f?w=800&q=80',
     description: 'A gentle backbend that strengthens the spine and opens the chest and shoulders.',
     durationMin: 3,
     difficulty: 'beginner',
@@ -125,7 +125,7 @@ const yogaPoses = [
   },
   {
     title: 'Evening Wind-Down',
-    imageUrl: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80',
+    imageUrl: 'https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=800&q=80',
     description: 'A calming evening sequence with Seated Forward Fold, Legs-Up-The-Wall, and Corpse Pose. Release the day\'s tension.',
     durationMin: 15,
     difficulty: 'beginner',
@@ -136,7 +136,6 @@ const yogaPoses = [
 async function main() {
   console.log('🌿  Seeding yoga master catalog…');
 
-  // Clear existing poses to avoid duplicates
   await prisma.yogaPose.deleteMany();
   console.log('   Cleared existing poses');
 
@@ -145,7 +144,7 @@ async function main() {
     console.log(`   ✅ ${pose.title}`);
   }
 
-  console.log(`\n✅  Done. ${yogaPoses.length} yoga poses added to master catalog.`);
+  console.log(`\n✅  Done. ${yogaPoses.length} yoga poses added.`);
 }
 
 main()
