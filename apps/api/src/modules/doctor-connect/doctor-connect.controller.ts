@@ -122,6 +122,36 @@ export class DoctorConnectController {
     });
   }
 
+  @Get('my-doctors')
+  @ApiOperation({ summary: 'My assigned doctors (patient view)' })
+  async myDoctors(@CurrentUser() user: AuthenticatedUser) {
+    const assignments = await this.prisma.doctorPatientAssignment.findMany({
+      where: { patientUserId: user.id },
+      include: {
+        doctor: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    return assignments.map((a) => ({
+      id: a.doctor.id,
+      userId: a.doctor.userId,
+      firstName: a.doctor.firstName,
+      lastName: a.doctor.lastName,
+      qualifications: a.doctor.qualifications,
+      specialties: a.doctor.specialties,
+      avatarUrl: a.doctor.avatarUrl,
+      yearsOfPractice: a.doctor.yearsOfPractice,
+      bio: a.doctor.bio,
+      availableForChat: a.doctor.availableForChat,
+      assignedAt: a.assignedAt,
+      notes: a.notes,
+    }));
+  }
+
   @Get('patients')
   @ApiOperation({ summary: 'My assigned patients (doctor view)' })
   async myPatients(@CurrentUser() user: AuthenticatedUser) {
