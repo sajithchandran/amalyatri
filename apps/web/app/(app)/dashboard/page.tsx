@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
-import { Calendar, MessageCircle, Sparkles, Wind, BookOpen, ArrowUpRight, Heart, Activity, Bell, ChefHat } from 'lucide-react';
+import { Calendar, MessageCircle, Sparkles, Wind, BookOpen, ArrowUpRight, Heart, Activity, Bell, ChefHat, Stethoscope } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { PageHeader } from '@/components/app/page-header';
 import { CardSkeleton } from '@/components/app/loading';
@@ -13,6 +13,51 @@ import { formatRelative } from '@/lib/utils';
 import type { Community, Conversation, EventItem, KnowledgeItem, Notification, TimelineEvent } from '@/lib/types';
 
 // ─── Sub-components (kept inline so the dashboard stays one cohesive page) ──
+
+function CareTeam({ doctors }: { doctors: any[] }) {
+  if (doctors.length === 0) return null;
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Your care team</CardTitle>
+          <CardDescription>The doctors guiding your wellness.</CardDescription>
+        </div>
+        <Button asChild size="sm" variant="ghost">
+          <Link href="/doctor">View all <ArrowUpRight size={14} /></Link>
+        </Button>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {doctors.map((d: any) => (
+          <Link
+            key={d.id}
+            href={`/doctor/${d.userId}`}
+            className="flex items-center gap-4 px-4 py-3 rounded-2xl border border-forest-900/8 hover:border-forest-700/30 hover:bg-forest-700/4 transition"
+          >
+            <div className="size-12 rounded-full overflow-hidden bg-forest-100 shrink-0 ring-2 ring-forest-700/10">
+              {d.avatarUrl ? (
+                <img src={d.avatarUrl} alt={d.firstName} className="size-full object-cover" />
+              ) : (
+                <div className="size-full grid place-items-center text-forest-700 text-sm font-medium">
+                  {d.firstName?.[0]}{d.lastName?.[0]}
+                </div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-ink">Dr. {d.firstName} {d.lastName}</p>
+              <p className="text-xs text-ink/55 mt-0.5">{d.qualifications?.split(',')[0] || d.specialties?.slice(0,2).join(', ')}</p>
+              <div className="flex items-center gap-2 mt-1">
+                <Stethoscope size={12} className="text-forest-700" />
+                <span className="text-xs text-forest-700">{d.yearsOfPractice}+ years</span>
+              </div>
+            </div>
+            <ArrowUpRight size={14} className="text-ink/30 shrink-0" />
+          </Link>
+        ))}
+      </CardContent>
+    </Card>
+  );
+}
 
 function Greeting({ name }: { name: string }) {
   const h = new Date().getHours();
@@ -282,6 +327,7 @@ export default function DashboardPage() {
   const timelineQ      = useQuery({ queryKey: ['timeline'],     queryFn: () => api.get<TimelineEvent[]>('/wellness-timeline?limit=6') });
   const eventsQ        = useQuery({ queryKey: ['events','upcoming'], queryFn: () => api.get<EventItem[]>('/events?upcoming=true') });
   const messagesQ      = useQuery({ queryKey: ['doctor','conversations'], queryFn: () => api.get<Conversation[]>('/doctor-connect/conversations') });
+  const myDoctorsQ     = useQuery({ queryKey: ['doctor','my-doctors'], queryFn: () => api.get<any[]>('/doctor-connect/my-doctors') });
   const communitiesQ   = useQuery({ queryKey: ['communities','mine'], queryFn: () => api.get<Community[]>('/communities/mine') });
   const knowledgeQ     = useQuery({ queryKey: ['knowledge','featured'], queryFn: () => api.get<KnowledgeItem[]>('/knowledge/featured') });
   const notificationsQ = useQuery({ queryKey: ['notifications','unread'], queryFn: () => api.get<Notification[]>('/notifications?onlyUnread=true') });
@@ -319,6 +365,11 @@ export default function DashboardPage() {
 
         <div className="space-y-6 min-w-0">
           <DailyInspiration />
+          {myDoctorsQ.isLoading ? (
+            <CardSkeleton lines={3} />
+          ) : (
+            <CareTeam doctors={myDoctorsQ.data ?? []} />
+          )}
           {messagesQ.isLoading ? (
             <CardSkeleton lines={3} />
           ) : (
