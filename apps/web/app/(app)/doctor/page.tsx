@@ -97,7 +97,11 @@ export default function DoctorListPage() {
                 <Card key={d.id} className="hover:shadow-glow">
                   <CardContent className="p-6 flex items-center gap-4">
                     <Avatar className="size-14 ring-2 ring-forest-700/10">
-                      <AvatarFallback className="text-base">{initials(`${d.firstName} ${d.lastName}`)}</AvatarFallback>
+                      {d.avatarUrl ? (
+                        <img src={d.avatarUrl} alt={d.firstName} className="size-full object-cover rounded-full" />
+                      ) : (
+                        <AvatarFallback className="text-base">{initials(`${d.firstName} ${d.lastName}`)}</AvatarFallback>
+                      )}
                     </Avatar>
                     <div className="flex-1 min-w-0">
                       <p className="font-display text-xl text-forest-900">Dr. {d.firstName} {d.lastName}</p>
