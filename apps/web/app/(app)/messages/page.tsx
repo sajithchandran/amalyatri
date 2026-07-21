@@ -54,7 +54,12 @@ export default function MessagesPage() {
       {/* Left pane: conversation list */}
       <div className={`${selectedId ? 'hidden md:flex' : 'flex'} flex-col w-full md:w-80 lg:w-96 shrink-0 border-r border-forest-900/8`}>
         <div className="p-4 border-b border-forest-900/5">
-          <h1 className="font-display text-xl text-forest-900">Messages</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="font-display text-xl text-forest-900">Messages</h1>
+            {(() => { const total = conversations.reduce((s: number, c: any) => s + (c.unread ?? 0), 0); return total > 0 ? (
+              <span className="bg-forest-700 text-cream text-xs font-medium rounded-full px-2.5 py-0.5">{total} new</span>
+            ) : null; })()}
+          </div>
           <p className="text-xs text-ink/55 mt-0.5">{conversations.length} conversation{conversations.length !== 1 ? 's' : ''}</p>
         </div>
 
