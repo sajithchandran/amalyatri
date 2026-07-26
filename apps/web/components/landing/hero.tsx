@@ -43,12 +43,12 @@ export function Hero() {
                 <dd className="mt-1 font-display text-xl text-forest-900">NABH</dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-widest opacity-60">Yatris</dt>
-                <dd className="mt-1 font-display text-xl text-forest-900">∞ lifelong</dd>
+                <dt className="text-xs uppercase tracking-widest opacity-60">Lineage</dt>
+                <dd className="mt-1 font-display text-xl text-forest-900">Since 1920s</dd>
               </div>
               <div>
-                <dt className="text-xs uppercase tracking-widest opacity-60">Promise</dt>
-                <dd className="mt-1 font-display text-xl text-forest-900">Never ending</dd>
+                <dt className="text-xs uppercase tracking-widest opacity-60">Location</dt>
+                <dd className="mt-1 font-display text-xl text-forest-900">Alleppey, Kerala</dd>
               </div>
             </dl>
           </div>
