@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           <BrandMark size={32} />
           <Wordmark className="text-lg" />
         </Link>
-        <div className="flex-1 flex items-center">
+        <div className="flex-1 flex items-center pt-14 pb-8">
           <div className="w-full max-w-md mx-auto">
             <KeralaMist />
           </div>
