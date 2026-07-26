@@ -18,14 +18,11 @@ export function SiteHeader() {
           <Link href="#stories"   className="hover:text-forest-700 transition">Stories</Link>
         </nav>
         <div className="flex items-center gap-2">
-          <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
-            <Link href="/login">Sign in</Link>
-          </Button>
           <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex text-xs text-ink/50 hover:text-forest-700">
             <Link href="/admin/login">Staff</Link>
           </Button>
           <Button asChild size="sm">
-            <Link href="/register">Become a Yatri</Link>
+            <Link href="/login">Yatri Login</Link>
           </Button>
           <MobileMenu />
         </div>

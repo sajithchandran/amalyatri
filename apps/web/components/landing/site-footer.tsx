@@ -29,8 +29,7 @@ export function SiteFooter() {
           <div>
             <h4 className="text-xs uppercase tracking-widest text-forest-900/60 mb-3">For Yatris</h4>
             <ul className="space-y-2 text-sm text-ink/80">
-              <li><Link href="/login"     className="hover:text-forest-700">Sign in</Link></li>
-              <li><Link href="/register"  className="hover:text-forest-700">Become a Yatri</Link></li>
+              <li><Link href="/login"     className="hover:text-forest-700">Yatri Login</Link></li>
               <li><Link href="/dashboard" className="hover:text-forest-700">Open dashboard</Link></li>
             </ul>
           </div>

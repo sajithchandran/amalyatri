@@ -22,10 +22,7 @@ export function CallToAction() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="bg-cream text-forest-900 hover:bg-clay-100">
-                <Link href="/register">Become a Yatri</Link>
-              </Button>
-              <Button asChild size="lg" variant="ghost" className="text-cream hover:bg-cream/10">
-                <Link href="/login">I already have an account</Link>
+                <Link href="/login">Yatri Login</Link>
               </Button>
             </div>
           </div>

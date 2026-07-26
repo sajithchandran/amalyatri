@@ -43,7 +43,7 @@ export function MobileMenu() {
               onClick={() => setOpen(false)}
               className="py-3 text-base font-medium text-forest-700 border-b border-forest-900/5"
             >
-              Sign in
+              Yatri Login
             </Link>
             <Link
               href="/admin/login"

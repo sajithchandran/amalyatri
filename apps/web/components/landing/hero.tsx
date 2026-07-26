@@ -30,7 +30,7 @@ export function Hero() {
 
             <div className="mt-9 flex flex-wrap gap-3 animate-fade-in">
               <Button asChild size="lg">
-                <Link href="/register">Become a Yatri</Link>
+                <Link href="/login">Yatri Login</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
                 <Link href="#philosophy">Read the philosophy</Link>
