@@ -39,8 +39,8 @@ export function Hero() {
 
             <dl className="mt-12 grid grid-cols-3 gap-6 max-w-md text-sm text-ink/70">
               <div>
-                <dt className="text-xs uppercase tracking-widest opacity-60">Founded</dt>
-                <dd className="mt-1 font-display text-xl text-forest-900">Kerala, 2026</dd>
+                <dt className="text-xs uppercase tracking-widest opacity-60">Accredited</dt>
+                <dd className="mt-1 font-display text-xl text-forest-900">NABH</dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-widest opacity-60">Yatris</dt>
