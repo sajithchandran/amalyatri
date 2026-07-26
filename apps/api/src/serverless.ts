@@ -6,7 +6,6 @@
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
 import express from 'express';
 import { AppModule } from './app.module';
@@ -46,14 +45,20 @@ async function bootstrap() {
   );
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  const config = new DocumentBuilder()
-    .setTitle('Amal Yatri API')
-    .setDescription('REST API powering the Amal Yatri lifelong wellness companion.')
-    .setVersion('0.1.0')
-    .addBearerAuth()
-    .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document);
+  // Swagger is heavy to load — skip it in production cold starts unless
+  // explicitly enabled via ENABLE_SWAGGER=true. Dynamic import keeps the
+  // module out of the default bootstrap path entirely.
+  if (process.env.ENABLE_SWAGGER === 'true' || process.env.NODE_ENV !== 'production') {
+    const { DocumentBuilder, SwaggerModule } = await import('@nestjs/swagger');
+    const config = new DocumentBuilder()
+      .setTitle('Amal Yatri API')
+      .setDescription('REST API powering the Amal Yatri lifelong wellness companion.')
+      .setVersion('0.1.0')
+      .addBearerAuth()
+      .build();
+    const document = SwaggerModule.createDocument(app, config);
+    SwaggerModule.setup('api/docs', app, document);
+  }
 
   await app.init();
   return app.getHttpAdapter().getInstance();

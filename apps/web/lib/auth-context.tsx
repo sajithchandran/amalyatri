@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   getAccessToken,
   setAccessToken,
@@ -42,6 +43,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = React.useState<AuthUser | null>(null);
   const [loading, setLoading] = React.useState(true);
   const router = useRouter();
+  const queryClient = useQueryClient();
   const api = React.useMemo(() => makeApi(), []);
 
   // On mount: if a token exists, try to fetch /users/me. If it fails, clear.
@@ -52,6 +54,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!getAccessToken()) { setLoading(false); return; }
         const me = await api.get<{ id: string; email: string; role: AuthUser['role']; profile?: { firstName?: string; lastName?: string } | null }>('/users/me');
         if (cancelled) return;
+        // Seed the React Query cache so pages (e.g. dashboard) don't
+        // refetch /users/me — they read this same key via useQuery.
+        queryClient.setQueryData(['users', 'me'], me);
         setUser({
           id: me.id,
           email: me.email,
@@ -67,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     })();
     return () => { cancelled = true; };
-  }, [api]);
+  }, [api, queryClient]);
 
   const value: AuthState = React.useMemo(() => ({
     user, loading, api,
@@ -77,6 +82,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         accessToken: string;
         refreshToken: string;
       }>('/auth/login', { email, password });
+      // A different account may be signing in — drop cached queries.
+      queryClient.removeQueries();
       setAccessToken(res.accessToken);
       setRefreshToken(res.refreshToken);
       setUser(res.user);
@@ -101,6 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setAccessToken(null);
       setRefreshToken(null);
       setUser(null);
+      queryClient.removeQueries();
       router.push('/');
     },
     async refresh() {
