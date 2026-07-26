@@ -48,7 +48,7 @@ export function Hero() {
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-widest opacity-60">Location</dt>
-                <dd className="mt-1 font-display text-xl text-forest-900">Alleppey, Kerala</dd>
+                <dd className="mt-1 font-display text-xl text-forest-900">Kerala backwaters</dd>
               </div>
             </dl>
           </div>
