@@ -23,12 +23,12 @@ const stories = [
 
 export function Testimonials() {
   return (
-    <section id="stories" className="py-24 md:py-32">
+    <section id="stories" className="py-16 md:py-24">
       <div className="container">
         <div className="max-w-3xl">
           <Badge variant="clay">From Yatris</Badge>
           <h2 className="mt-5 font-display text-display-lg md:text-display-xl text-balance">
-            Three small, honest
+            Three small, honest{' '}
             <br className="hidden md:block" />
             voices.
           </h2>

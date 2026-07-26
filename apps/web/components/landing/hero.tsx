@@ -6,17 +6,17 @@ export function Hero() {
   return (
     <section className="relative overflow-hidden">
       <div className="hero-bg absolute inset-0 -z-10" aria-hidden />
-      <div className="container pt-16 pb-24 md:pt-24 md:pb-32">
+      <div className="container pt-16 pb-16 md:pt-24 md:pb-24">
         <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 lg:gap-20 items-center">
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-2 rounded-full border border-forest-900/10 bg-cream/70 px-4 py-1.5 text-xs uppercase tracking-widest text-forest-800 animate-fade-in">
               <span aria-hidden>🌿</span> A digital home for life
             </span>
 
-            <h1 className="mt-6 font-display text-display-xl md:text-display-2xl text-balance text-ink animate-fade-in">
-              The wellness journey
+            <h1 className="mt-6 font-display text-display-lg md:text-display-2xl text-balance text-ink animate-fade-in">
+              The wellness journey{' '}
               <br className="hidden md:block" />
-              <em className="not-italic text-forest-700">continues</em>, gently,
+              <em className="not-italic text-forest-700">continues</em>, gently,{' '}
               <br className="hidden md:block" />
               long after you leave.
             </h1>

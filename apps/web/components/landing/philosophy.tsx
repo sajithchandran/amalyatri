@@ -20,12 +20,12 @@ const pillars = [
 
 export function Philosophy() {
   return (
-    <section id="philosophy" className="py-24 md:py-32 section-fade">
+    <section id="philosophy" className="py-16 md:py-24 section-fade">
       <div className="container">
         <div className="max-w-3xl mx-auto text-center">
           <Badge variant="clay">Philosophy</Badge>
           <h2 className="mt-5 font-display text-display-lg md:text-display-xl text-balance">
-            Wellness is a relationship,
+            Wellness is a relationship,{' '}
             <br className="hidden md:block" />
             not a transaction.
           </h2>

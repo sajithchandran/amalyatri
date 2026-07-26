@@ -45,12 +45,12 @@ const features = [
 
 export function Features() {
   return (
-    <section id="features" className="py-24 md:py-32">
+    <section id="features" className="py-16 md:py-24">
       <div className="container">
         <div className="max-w-3xl">
           <Badge variant="forest">What you'll find inside</Badge>
           <h2 className="mt-5 font-display text-display-lg md:text-display-xl text-balance">
-            Eight gentle features,
+            Eight gentle features,{' '}
             <br className="hidden md:block" />
             chosen carefully.
           </h2>

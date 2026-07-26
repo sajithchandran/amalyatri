@@ -1,7 +1,19 @@
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 
-const doctors = [
+type Doctor = {
+  name: string;
+  role: string;
+  experience: string;
+  qualifications: string;
+  bio: string;
+  specialties: string[];
+  image: string;
+  /** Optional CSS zoom-crop for photos that aren't close headshots */
+  imgZoom?: string;
+};
+
+const doctors: Doctor[] = [
   {
     name: 'Dr. Reji Raj',
     role: 'General Manager & Sr Ayurveda Consultant',
@@ -28,6 +40,8 @@ const doctors = [
     bio: 'Blends Eastern and Western practices. Trained in Thai Holistic Treatments. Previously at Taj Hotels, Sofitel Phuket, and Vivanta by Taj.',
     specialties: ['Panchakarma', 'Spa Therapies', 'Wellness Management'],
     image: 'https://test.amaltamara.com/wp-content/uploads/2025/09/IMG_8237-scaled.jpg',
+    // Environmental half-body shot — zoom-crop to match the other headshots
+    imgZoom: 'scale-[1.45] origin-[53%_30%]',
   },
   {
     name: 'Dr. Karthika S',
@@ -78,12 +92,12 @@ const doctors = [
 
 export function Doctors() {
   return (
-    <section id="doctors" className="py-24 md:py-32 section-fade">
+    <section id="doctors" className="py-16 md:py-24 section-fade">
       <div className="container">
         <div className="max-w-3xl">
           <Badge variant="sun">Your doctors</Badge>
           <h2 className="mt-5 font-display text-display-lg md:text-display-xl text-balance">
-            The hands that guided you,
+            The hands that guided you,{' '}
             <br className="hidden md:block" />
             now within reach.
           </h2>
@@ -102,12 +116,14 @@ export function Doctors() {
             >
               {/* Photo — portrait-friendly for doctor headshots */}
               <div className="aspect-[3/4] bg-gradient-to-br from-forest-50 to-cream overflow-hidden">
-                <img
-                  src={d.image}
-                  alt={d.name}
-                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
-                  loading="lazy"
-                />
+                <div className={`size-full${d.imgZoom ? ` ${d.imgZoom}` : ''}`}>
+                  <img
+                    src={d.image}
+                    alt={d.name}
+                    className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                    loading="lazy"
+                  />
+                </div>
               </div>
 
               {/* Info */}
@@ -118,11 +134,9 @@ export function Doctors() {
                 <h3 className="font-display text-xl text-forest-900 leading-tight mt-1">
                   {d.name}
                 </h3>
-                <div className="flex items-center gap-2 mt-1 text-xs text-ink/55 flex-wrap">
-                  <span>{d.experience}</span>
-                  <span className="text-ink/30">·</span>
-                  <span>{d.qualifications}</span>
-                </div>
+                <p className="mt-1 text-xs text-ink/55">
+                  {d.experience} <span className="text-ink/30">·</span> {d.qualifications}
+                </p>
 
                 <p className="mt-3 text-sm text-ink/75 leading-relaxed flex-1">
                   {d.bio}
@@ -143,7 +157,7 @@ export function Doctors() {
         <p className="mt-10 text-center text-sm text-ink/55">
           Meet the full team on{' '}
           <a href="https://test.amaltamara.com/expertise/" target="_blank" rel="noopener noreferrer"
-             className="text-forest-700 hover:underline">
+             className="text-forest-700 underline underline-offset-4 decoration-forest-700/40 hover:decoration-forest-700 transition">
             Amal Tamara expertise page
           </a>
         </p>

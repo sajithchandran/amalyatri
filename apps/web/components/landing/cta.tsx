@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 
 export function CallToAction() {
   return (
-    <section className="py-24 md:py-32">
+    <section className="py-16 md:py-24">
       <div className="container">
         <div className="relative rounded-[2rem] overflow-hidden brand-gradient text-cream p-10 md:p-16 glow-leaf">
           <div
