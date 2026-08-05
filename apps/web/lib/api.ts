@@ -20,6 +20,10 @@
  *
  * Server: only used during SSR requests. If `NEXT_PUBLIC_API_URL` is set,
  * uses that (server-to-server). Otherwise falls back to localhost.
+ *
+ * NOTE: the deployed prod build reads this module at build time — a change
+ * here forces a fresh Vercel production rebuild even when app code is
+ * otherwise unchanged.
  */
 function resolveApiBase(): string {
   const explicit = process.env.NEXT_PUBLIC_API_URL;
